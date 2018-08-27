@@ -28,7 +28,7 @@ set(QT_SRC
   ${CUR_DIR}/src/main_widget.ui)
 
 add_executable(CoinMarketWatcher
-  ./src/main.cc
+  ${DIR_SRC}
   ${QT_SRC}
   ${MOC}
   ${RCC}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>974</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -270,8 +270,8 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>120</y>
+     <x>660</x>
+     <y>400</y>
      <width>89</width>
      <height>50</height>
     </rect>
@@ -283,12 +283,62 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>130</y>
+     <x>460</x>
+     <y>400</y>
      <width>113</width>
      <height>40</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QTableWidget" name="tabHuobi">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>771</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string>交易对</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>价格</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>交易量(btc)</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>261</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>交易所</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="cmbMarket"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

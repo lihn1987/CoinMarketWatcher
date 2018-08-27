@@ -13,7 +13,7 @@ void callback(std::shared_ptr<HttpRequestMsgStruct> request, std::shared_ptr<Htt
 }
 
 int main(int argc, char** argv){
-  std::cout<<"hello world!"<<std::endl;
+  /*std::cout<<"hello world!"<<std::endl;
   AsioHttps https(4);
   std::shared_ptr<AsioHttpsSocket> socket = https.CreateAsioHttpSocket();
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv){
     socket_muti[i] = https.CreateAsioHttpSocket();
     socket_muti[i]->Process("http://www.sohu.com/"
                             , boost::bind(callback,_1,_2, 6+i));
-  }
+  }*/
 
   QApplication app(argc, argv);
   MainWidget widget;
