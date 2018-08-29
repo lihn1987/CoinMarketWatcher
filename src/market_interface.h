@@ -4,15 +4,26 @@
 #include <vector>
 #include <map>
 #include <atomic>
+#include <boost/date_time.hpp>
 class MarketHuobi;
 class MarketOK;
 class MarketBinance;
 class MarketBitFinex;
 
+struct ActiveInfo{
+  boost::posix_time::ptime last_time_;
+  uint32_t interval_ = 0;
+};
+struct DepthInfo{
+  std::list<std::pair<std::string, std::string>> bids_;
+  std::list<std::pair<std::string, std::string>> asks_;
+};
 class CoinInfo{
 public:
   float price_now();
   void set_price_now(float price);
+  DepthInfo depth_info_;
+  ActiveInfo active_info_;
 private:
   std::atomic<float> price_now_;
 };

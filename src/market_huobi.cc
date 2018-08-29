@@ -1,11 +1,100 @@
 #include "market_huobi.h"
-
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <iostream>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 std::map<std::string, std::vector<std::string> > MarketHuobi::GetMarketPairMap(){
   return market_pair_map_;
 }
 
+void MarketHuobi::StartWatch(){
+//  std::map<std::string, std::vector<std::string>>
+  for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
+    for(const std::string& item2:item1.second){
+      std::string coin_base = item1.first;
+      std::string coin_for = item2;
+      std::string url = (boost::format("https://api.huobi.pro/market/depth?symbol=%s%s&type=step0")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
+      std::shared_ptr<AsioHttpsSocket> socket = asio_https_.CreateAsioHttpSocket();
+      socket_map_[coin_for+"_"+coin_base] = socket;
+      ProxyConfig config;
+      config.url_="127.0.0.1";
+      config.port_ = 1080;
+      socket->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
+    }
+  }
+}
+
+
+
+void MarketHuobi::OnGetDepth(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce,std::string coin_for, std::string coin_base){
+
+  static std::mutex mutex;
+  std::string str_data;
+  mutex.lock();
+  /*std::cout<<idx++<<std::endl;
+  std::cout<<","<<responce->head_.status<<","<<request->head_.url_<<std::endl;*/
+  std::string url = (boost::format("https://api.huobi.pro/market/depth?symbol=%s%s&type=step0")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
+  //std::cout<<url<<std::endl;
+
+  //boost::this_thread::sleep(boost::posix_time::millisec(100));
+  coin_map_[coin_for+"_"+coin_base].active_info_.interval_ = ((boost::posix_time::microsec_clock::local_time()-coin_map_[coin_for+"_"+coin_base].active_info_.last_time_)).total_milliseconds();
+  coin_map_[coin_for+"_"+coin_base].active_info_.last_time_ = boost::posix_time::microsec_clock::local_time();
+  //coin_map_[coin_for+"_"+coin_base].active_info_.interval_ = (boost::posix_time::microsec_clock()-coin_map_[coin_for+"_"+coin_base].active_info_.last_time_)
+  //boost::this_thread::sleep(boost::posix_time::millisec(5000));
+
+  if(responce->error_ ==""){
+    //boost::this_thread::sleep(boost::posix_time::millisec(1000));
+    //std::cout<<coin_map_[coin_for+"_"+coin_base].active_info_.interval_<<","<<idx++ <<","<<url<<"="<<in_count<<std::endl;
+    //std::cout<<responce->body_<<std::endl;
+  }else{
+    std::cout<<"error"<<std::endl;
+  }
+  str_data = responce->body_;
+  mutex.unlock();
+
+  DepthInfo depth_info;
+
+  boost::property_tree::ptree pt;
+  std::istringstream stream(str_data);
+  boost::property_tree::read_json(stream, pt);
+
+  boost::property_tree::ptree child_bids = pt.get_child("tick.bids");
+  for(boost::property_tree::ptree::value_type value:child_bids){
+    int i = 0;
+    std::vector<std::string> vec_str;
+    for(boost::property_tree::ptree::value_type value_item: value.second){
+      vec_str.push_back(value_item.second.get<std::string>(""));
+    }
+    if(vec_str.size() >= 2){
+      depth_info.bids_.push_back(std::make_pair(vec_str[0], vec_str[1]));
+    }
+  }
+
+  boost::property_tree::ptree child_asks = pt.get_child("tick.asks");
+  for(boost::property_tree::ptree::value_type value:child_asks){
+    int i = 0;
+    std::vector<std::string> vec_str;
+    for(boost::property_tree::ptree::value_type value_item: value.second){
+      vec_str.push_back(value_item.second.get<std::string>(""));
+    }
+    if(vec_str.size() >= 2){
+      depth_info.asks_.push_back(std::make_pair(vec_str[0], vec_str[1]));
+    }
+  }
+
+  coin_map_[coin_for+"_"+coin_base].depth_info_ = depth_info;
+  ProxyConfig config;
+  config.url_="127.0.0.1";
+  config.port_ = 1080;
+  //socket_map_[coin_for+"_"+coin_base] = asio_https_.CreateAsioHttpSocket();
+  socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
+}
 void MarketHuobi::InitMarketPair(){
   market_pair_map_["USD"].push_back("BTC");
+  return;
   market_pair_map_["USD"].push_back("BCH");
   market_pair_map_["USD"].push_back("ETH");
   market_pair_map_["USD"].push_back("ETC");
@@ -254,8 +343,9 @@ void MarketHuobi::InitMarketPair(){
   market_pair_map_["HT"].push_back("LTC");
   market_pair_map_["HT"].push_back("DASH");
   market_pair_map_["HT"].push_back("IOST");
-}
 
-MarketHuobi::MarketHuobi(){
+}
+MarketHuobi::MarketHuobi():asio_https_(2){
   InitMarketPair();
+  //depth_socket_ = asio_https_.CreateAsioHttpSocket();
 }

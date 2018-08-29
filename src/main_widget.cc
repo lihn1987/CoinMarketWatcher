@@ -1,6 +1,7 @@
 #include "main_widget.h"
 #include "ui_main_widget.h"
 #include "market_interface.h"
+#include "market_huobi.h"
 #include <QComboBox>
 #include <QTableWidget>
 MainWidget::MainWidget(QWidget *parent) :
@@ -20,7 +21,8 @@ MainWidget::~MainWidget(){
 }
 
 void MainWidget::on_pushButton_clicked(){
-
+  MarketHuobi *huobi = new MarketHuobi();
+  huobi->StartWatch();
 }
 
 void MainWidget::InitHuobiTable()
@@ -32,7 +34,6 @@ void MainWidget::InitHuobiTable()
       ui->tabHuobi->insertRow(idx);
       QString str = QString().sprintf("%s/%s", item.c_str(), item_tmp.first.c_str());
       ui->tabHuobi->setItem(idx, 0, new QTableWidgetItem(str));
-
     }
   }
 }
