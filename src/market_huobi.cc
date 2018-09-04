@@ -11,7 +11,7 @@ std::map<std::string, std::vector<std::string> > MarketHuobi::GetMarketPairMap()
 }
 
 void MarketHuobi::StartWatch(){
-//  std::map<std::string, std::vector<std::string>>
+  //深度监控
   for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
     for(const std::string& item2:item1.second){
       std::string coin_base = item1.first;
@@ -25,79 +25,153 @@ void MarketHuobi::StartWatch(){
       socket->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
     }
   }
+  //交易历史监控
+  for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
+    for(const std::string& item2:item1.second){
+      std::string coin_base = item1.first;
+      std::string coin_for = item2;
+      std::string url = (boost::format("https://api.huobi.pro/market/history/trade?symbol=%s%s&size=2000")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
+      ProxyConfig config;
+      config.url_="127.0.0.1";
+      config.port_ = 1080;
+      socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetTradeHistory, this, _1, _2, coin_for, coin_base));
+    }
+  }
 }
 
 
 
 void MarketHuobi::OnGetDepth(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce,std::string coin_for, std::string coin_base){
-
   static std::mutex mutex;
   std::string str_data;
   mutex.lock();
-  /*std::cout<<idx++<<std::endl;
-  std::cout<<","<<responce->head_.status<<","<<request->head_.url_<<std::endl;*/
   std::string url = (boost::format("https://api.huobi.pro/market/depth?symbol=%s%s&type=step0")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
-  //std::cout<<url<<std::endl;
-
-  //boost::this_thread::sleep(boost::posix_time::millisec(100));
-  coin_map_[coin_for+"_"+coin_base].active_info_.interval_ = ((boost::posix_time::microsec_clock::local_time()-coin_map_[coin_for+"_"+coin_base].active_info_.last_time_)).total_milliseconds();
-  coin_map_[coin_for+"_"+coin_base].active_info_.last_time_ = boost::posix_time::microsec_clock::local_time();
-  //coin_map_[coin_for+"_"+coin_base].active_info_.interval_ = (boost::posix_time::microsec_clock()-coin_map_[coin_for+"_"+coin_base].active_info_.last_time_)
-  //boost::this_thread::sleep(boost::posix_time::millisec(5000));
-
-  if(responce->error_ ==""){
-    //boost::this_thread::sleep(boost::posix_time::millisec(1000));
-    //std::cout<<coin_map_[coin_for+"_"+coin_base].active_info_.interval_<<","<<idx++ <<","<<url<<"="<<in_count<<std::endl;
-    //std::cout<<responce->body_<<std::endl;
-  }else{
+  if(responce->error_ !=""){
     std::cout<<"error"<<std::endl;
+  }else{
+    str_data = responce->body_;
   }
-  str_data = responce->body_;
   mutex.unlock();
 
-  DepthInfo depth_info;
-
-  boost::property_tree::ptree pt;
-  std::istringstream stream(str_data);
-  boost::property_tree::read_json(stream, pt);
-
-  boost::property_tree::ptree child_bids = pt.get_child("tick.bids");
-  for(boost::property_tree::ptree::value_type value:child_bids){
-    int i = 0;
-    std::vector<std::string> vec_str;
-    for(boost::property_tree::ptree::value_type value_item: value.second){
-      vec_str.push_back(value_item.second.get<std::string>(""));
+  if(str_data != ""){
+    //对深度信息进行处理
+    DepthInfo depth_info;
+    try{//进行json解析
+      boost::property_tree::ptree pt;
+      std::istringstream stream(str_data);
+      boost::property_tree::read_json(stream, pt);
+      //处理bids
+      boost::property_tree::ptree child_bids = pt.get_child("tick.bids");
+      for(boost::property_tree::ptree::value_type value:child_bids){
+        std::vector<std::string> vec_str;
+        for(boost::property_tree::ptree::value_type value_item: value.second){
+          vec_str.push_back(value_item.second.get<std::string>(""));
+        }
+        if(vec_str.size() >= 2){
+          depth_info.bids_.push_back(std::make_pair(vec_str[0], vec_str[1]));
+        }
+      }
+      //处理asks
+      boost::property_tree::ptree child_asks = pt.get_child("tick.asks");
+      for(boost::property_tree::ptree::value_type value:child_asks){
+        std::vector<std::string> vec_str;
+        for(boost::property_tree::ptree::value_type value_item: value.second){
+          vec_str.push_back(value_item.second.get<std::string>(""));
+        }
+        if(vec_str.size() >= 2){
+          depth_info.asks_.push_back(std::make_pair(vec_str[0], vec_str[1]));
+        }
+      }
+    }catch(...){//json解析失败
+      std::cout<<"Huobi Depth info analyze error"<<std::endl;
     }
-    if(vec_str.size() >= 2){
-      depth_info.bids_.push_back(std::make_pair(vec_str[0], vec_str[1]));
+    {//修改深度信息
+      boost::lock_guard<std::mutex> lk(coin_info_mutex_);
+      depth_info.active_info_.interval_ = ((boost::posix_time::microsec_clock::local_time()-coin_info_[coin_for+"_"+coin_base].depth_info_.active_info_.last_time_)).total_milliseconds();
+      depth_info.active_info_.last_time_ = boost::posix_time::microsec_clock::local_time();
+      coin_info_[coin_for+"_"+coin_base].depth_info_ = depth_info;
+      DoDepthChangeSig(coin_for, coin_base, depth_info);
     }
   }
-
-  boost::property_tree::ptree child_asks = pt.get_child("tick.asks");
-  for(boost::property_tree::ptree::value_type value:child_asks){
-    int i = 0;
-    std::vector<std::string> vec_str;
-    for(boost::property_tree::ptree::value_type value_item: value.second){
-      vec_str.push_back(value_item.second.get<std::string>(""));
-    }
-    if(vec_str.size() >= 2){
-      depth_info.asks_.push_back(std::make_pair(vec_str[0], vec_str[1]));
-    }
-  }
-
-  coin_map_[coin_for+"_"+coin_base].depth_info_ = depth_info;
   ProxyConfig config;
   config.url_="127.0.0.1";
   config.port_ = 1080;
-  //socket_map_[coin_for+"_"+coin_base] = asio_https_.CreateAsioHttpSocket();
   socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
 }
+
+void MarketHuobi::OnGetTradeHistory(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::string coin_for, std::string coin_base){
+  static std::mutex mutex;
+  std::string str_data;
+  mutex.lock();
+  std::string url = (boost::format("https://api.huobi.pro/market/history/trade?symbol=%s%s&size=2000")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
+  if(responce->error_ !=""){
+    std::cout<<"error"<<std::endl;
+  }else{
+    str_data = responce->body_;
+  }
+  mutex.unlock();
+
+  if(str_data != ""){
+    TradeHistory trade_history;
+    try{
+      boost::property_tree::ptree pt;
+      std::istringstream stream(str_data);
+      boost::property_tree::read_json(stream, pt);
+
+      boost::property_tree::ptree child_pt = pt.get_child("data");
+      for(boost::property_tree::ptree::value_type value:child_pt){
+        for(boost::property_tree::ptree::value_type value_item: value.second.get_child("data")){
+          TradeItem trade_item;
+          trade_item.id_ = value_item.second.get<std::string>("id");
+          trade_item.price_ = value_item.second.get<std::string>("price");
+          trade_item.amount_ = value_item.second.get<std::string>("amount");
+          trade_item.direction_ = value_item.second.get<std::string>("direction");
+          trade_item.ts = value_item.second.get<std::string>("ts");
+          trade_history.trade_list_.push_back(trade_item);
+        }
+      }
+    }catch(...){//json 解析失败
+      std::cout<<"Huobi trade history info analyze error:"<<str_data<<std::endl;
+    }
+    {
+      std::lock_guard<std::mutex> lk(coin_info_mutex_);
+      trade_history.active_info_.interval_ = ((boost::posix_time::microsec_clock::local_time()-coin_info_[coin_for+"_"+coin_base].last_trade_history_.active_info_.last_time_)).total_milliseconds();
+      trade_history.active_info_.last_time_ = boost::posix_time::microsec_clock::local_time();
+      coin_info_[coin_for+"_"+coin_base].last_trade_history_ = trade_history;
+      DoTradeHistroyChangeSig(coin_for, coin_base, trade_history);
+    }
+  }
+  ProxyConfig config;
+  config.url_="127.0.0.1";
+  config.port_ = 1080;
+  socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetTradeHistory, this, _1, _2, coin_for, coin_base));
+}
+
+DepthInfo MarketHuobi::GetCoinDepthInfo(const std::string &coin_for, const std::string &coin_base){
+  std::lock_guard<std::mutex> lk(coin_info_mutex_);
+  return coin_info_[coin_for+"_"+coin_base].depth_info_;
+}
+
+TradeHistory MarketHuobi::GetCoinTradeHistory(const std::string &coin_for, const std::string &coin_base){
+  std::lock_guard<std::mutex> lk(coin_info_mutex_);
+  return coin_info_[coin_for+"_"+coin_base].last_trade_history_;
+}
+
+boost::signals2::connection MarketHuobi::AddDepthChangeWatcher(boost::function<void (std::string, std::string, DepthInfo)> callback){
+  return DoDepthChangeSig.connect(callback);
+}
+
+boost::signals2::connection MarketHuobi::AddTradeHistroyChangeWatcher(boost::function<void (std::string, std::string, TradeHistory)> callback){
+  return DoTradeHistroyChangeSig.connect(callback);
+}
+
 void MarketHuobi::InitMarketPair(){
   market_pair_map_["USD"].push_back("BTC");
-  return;
+
   market_pair_map_["USD"].push_back("BCH");
   market_pair_map_["USD"].push_back("ETH");
   market_pair_map_["USD"].push_back("ETC");
+
   market_pair_map_["USD"].push_back("LTC");
   market_pair_map_["USD"].push_back("EOS");
   market_pair_map_["USD"].push_back("XRP");
@@ -345,7 +419,7 @@ void MarketHuobi::InitMarketPair(){
   market_pair_map_["HT"].push_back("IOST");
 
 }
-MarketHuobi::MarketHuobi():asio_https_(2){
+MarketHuobi::MarketHuobi():asio_https_(4){
   InitMarketPair();
   //depth_socket_ = asio_https_.CreateAsioHttpSocket();
 }

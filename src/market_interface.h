@@ -15,15 +15,28 @@ struct ActiveInfo{
   uint32_t interval_ = 0;
 };
 struct DepthInfo{
-  std::list<std::pair<std::string, std::string>> bids_;
-  std::list<std::pair<std::string, std::string>> asks_;
+  std::list<std::pair<std::string, std::string>> bids_;//卖价，数量
+  std::list<std::pair<std::string, std::string>> asks_;//买价，数量
+  ActiveInfo active_info_;
+};
+struct TradeItem{
+  std::string id_;//id
+  std::string price_;//价格
+  std::string amount_;//数量
+  std::string direction_;//方向 sell,buy
+  std::string ts;//时间
+};
+struct TradeHistory{
+  std::list<TradeItem> trade_list_;
+  ActiveInfo active_info_;
 };
 class CoinInfo{
 public:
   float price_now();
   void set_price_now(float price);
   DepthInfo depth_info_;
-  ActiveInfo active_info_;
+  TradeHistory last_trade_history_;
+
 private:
   std::atomic<float> price_now_;
 };
