@@ -37,3 +37,4 @@ add_executable(CoinMarketWatcher
 target_link_libraries(CoinMarketWatcher AsioHttpsLib)
 target_link_libraries(CoinMarketWatcher Qt5::Widgets)
 target_link_libraries(CoinMarketWatcher boost_thread)
+target_link_libraries(CoinMarketWatcher boost_iostreams)

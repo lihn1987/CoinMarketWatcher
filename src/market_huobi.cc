@@ -6,25 +6,31 @@
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
+
+#include "WebSocketMessage.h"
 std::map<std::string, std::vector<std::string> > MarketHuobi::GetMarketPairMap(){
   return market_pair_map_;
 }
 
 void MarketHuobi::StartWatch(){
   //深度监控
-  for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
+  /*for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
     for(const std::string& item2:item1.second){
       std::string coin_base = item1.first;
       std::string coin_for = item2;
       std::string url = (boost::format("https://api.huobi.pro/market/depth?symbol=%s%s&type=step0")%boost::algorithm::to_lower_copy(coin_for)%boost::algorithm::to_lower_copy(coin_base=="USD"?"USDT":coin_base)).str();
       std::shared_ptr<AsioHttpsSocket> socket = asio_https_.CreateAsioHttpSocket();
-      socket_map_[coin_for+"_"+coin_base] = socket;
+      depth_socket_map_[coin_for+"_"+coin_base] = socket;
       ProxyConfig config;
       config.url_="127.0.0.1";
       config.port_ = 1080;
       socket->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
     }
-  }
+  }*//*
   //交易历史监控
   for(const std::pair<std::string, std::vector<std::string>>& item1:market_pair_map_){
     for(const std::string& item2:item1.second){
@@ -36,7 +42,22 @@ void MarketHuobi::StartWatch(){
       config.port_ = 1080;
       socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetTradeHistory, this, _1, _2, coin_for, coin_base));
     }
-  }
+  }*/
+  std::shared_ptr<AsioHttpsRequest> request = std::make_shared<AsioHttpsRequest>();
+  request->config_.ssl_ = false;
+  request->config_.use_proxy_ = true;
+  request->config_.websocket_ = true;
+  request->config_.proxy_.url_ = "127.0.0.1";
+  request->config_.proxy_.port_ = 1080;
+  request->head_.DeleteAllAttribute();
+  request->head_.SetAttribute("host", "api.huobi.pro");
+  request->head_.SetAttribute("Origin", "wss://api.huobi.pro");
+  request->head_.SetAttribute("Upgrade", "websocket");
+  request->head_.SetAttribute("Connection", "Upgrade");
+  request->head_.SetAttribute("Sec-WebSocket-Key", "x3JJHMbDL1EzLkh9GBhXDw==");
+  request->head_.SetAttribute("Sec-WebSocket-Version", "13");
+  request->head_.url_ = "/ws";
+  websocket_transaction_->Process(request, boost::bind(&MarketHuobi::OnGetTradeHistoryWebsocket, this, _1,_2, websocket_transaction_));
 }
 
 
@@ -49,7 +70,7 @@ void MarketHuobi::OnGetDepth(std::shared_ptr<AsioHttpsRequest> request, std::sha
   if(responce->error_ !=""){
     std::cout<<"error"<<std::endl;
   }else{
-    str_data = responce->body_;
+    //str_data = responce->body_;
   }
   mutex.unlock();
 
@@ -96,7 +117,7 @@ void MarketHuobi::OnGetDepth(std::shared_ptr<AsioHttpsRequest> request, std::sha
   ProxyConfig config;
   config.url_="127.0.0.1";
   config.port_ = 1080;
-  socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
+  depth_socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetDepth, this, _1, _2, coin_for, coin_base));
 }
 
 void MarketHuobi::OnGetTradeHistory(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::string coin_for, std::string coin_base){
@@ -144,7 +165,58 @@ void MarketHuobi::OnGetTradeHistory(std::shared_ptr<AsioHttpsRequest> request, s
   ProxyConfig config;
   config.url_="127.0.0.1";
   config.port_ = 1080;
-  socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetTradeHistory, this, _1, _2, coin_for, coin_base));
+  transaction_socket_map_[coin_for+"_"+coin_base]->Process(url, config, boost::bind(&MarketHuobi::OnGetTradeHistory, this, _1, _2, coin_for, coin_base));
+}
+#include <boost/iostreams/copy.hpp>
+#include <sstream>
+void MarketHuobi::OnGetTradeHistoryWebsocket(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::shared_ptr<AsioHttpsSocket> socket)
+{
+  if(responce->error_ == ""){
+    std::cout<<"get response success!"<<request->head_.GetAttribute("host")<<std::endl;
+    std::cout<<responce->str_ori_<<std::endl;
+    trade_history_websocket_receive_ += responce->str_ori_;
+    WebSocketMessage msg;
+    if(msg.Decode(trade_history_websocket_receive_)){
+      std::string str_unzip;
+      {
+        boost::iostreams::filtering_ostream fos;
+        fos.push(boost::iostreams::gzip_decompressor());
+        fos.push(boost::iostreams::back_inserter(str_unzip));
+        fos << msg.body_;
+        fos << std::flush;
+        std::cout<<str_unzip<<std::endl;
+
+        /*boost::algorithm::replace_all(str_unzip, "ping", "pong");
+        std::string send_msg = WebSocketMessage::Encode(str_unzip);
+        send_msg.insert(send_msg.end(), str_unzip.begin(), str_unzip.end());
+        socket->SocketSend(send_msg);
+        return;*/
+      }
+      std::string out = HandleWebSocketMessage(str_unzip);
+      if(out.size()){
+        std::cout<<"write:"<<out<<std::endl;
+
+        std::string str_zip;
+        /*{
+          boost::iostreams::filtering_ostream fos;
+          fos.push(boost::iostreams::gzip_compressor());
+          fos.push(boost::iostreams::back_inserter(str_zip));
+          fos << out;
+          fos << std::flush;
+          std::cout<<str_zip<<std::endl;
+        }*/
+        //boost::algorithm::replace_all(out, "ping", "pong");
+        str_zip = "{\"req\": \"market.btcusdt.kline.1min\",\"id\": \"id10\"}";
+        std::string send_msg = WebSocketMessage::Encode(str_zip);
+
+        send_msg.insert(send_msg.end(), str_zip.begin(), str_zip.end());
+        socket->SocketSend(send_msg);
+      }
+    }
+  }else{
+    trade_history_websocket_receive_.clear();
+    std::cout<<"get response faild:"<<request->head_.GetAttribute("host")<<responce->error_<<std::endl;
+  }
 }
 
 DepthInfo MarketHuobi::GetCoinDepthInfo(const std::string &coin_for, const std::string &coin_base){
@@ -165,9 +237,37 @@ boost::signals2::connection MarketHuobi::AddTradeHistroyChangeWatcher(boost::fun
   return DoTradeHistroyChangeSig.connect(callback);
 }
 
+std::string MarketHuobi::HandleWebSocketMessage(const std::string &str_in){
+  boost::property_tree::ptree pt;
+  std::istringstream istm(str_in);
+  try{
+    boost::property_tree::read_json(istm, pt);
+    std::string rtn;
+    if(HandleWebSocketPing(pt, rtn)){
+      return rtn;
+    }
+
+  }catch(...){
+    std::cout<<"json error"<<std::endl;
+    return "";
+  }
+  return "";
+}
+
+bool MarketHuobi::HandleWebSocketPing(boost::property_tree::ptree &pt, std::string &str_out){
+  try{
+    std::string value = pt.get<std::string>("ping");
+    std::cout<<"type of message is ping."<<std::endl;
+    str_out = (boost::format("{\"pong\":%s}")%value).str();
+    return true;
+  }catch(...){
+    return false;
+  }
+}
+
 void MarketHuobi::InitMarketPair(){
   market_pair_map_["USD"].push_back("BTC");
-
+  return;
   market_pair_map_["USD"].push_back("BCH");
   market_pair_map_["USD"].push_back("ETH");
   market_pair_map_["USD"].push_back("ETC");
@@ -419,7 +519,9 @@ void MarketHuobi::InitMarketPair(){
   market_pair_map_["HT"].push_back("IOST");
 
 }
+
 MarketHuobi::MarketHuobi():asio_https_(4){
   InitMarketPair();
   //depth_socket_ = asio_https_.CreateAsioHttpSocket();
+  websocket_transaction_ = asio_https_.CreateAsioHttpSocket();
 }
