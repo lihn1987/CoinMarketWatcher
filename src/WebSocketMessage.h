@@ -69,12 +69,12 @@ struct WebSocketMessage{
   static std::string Encode(const std::string& str_in){
     std::string rtn;
     WebSocketHead head;
-    head.op_code_ = 0x02;
+    head.op_code_ = 0x01;
     head.rsv3_ = 0x00;
     head.rsv2_ = 0x00;
     head.rsv1_ = 0x00;
     head.fin_ = 0x01;
-    head.mask_ = 0x00;
+    head.mask_ = 0x01;
     if(str_in.size()<127){
       head.len1 = str_in.size();
       rtn.assign((char*)&head, 2);
@@ -94,6 +94,11 @@ struct WebSocketMessage{
       head.len4 |= str_in.size()>>16;
       head.len5 |= str_in.size();
       rtn.assign((char*)&head, 10);
+    }
+    unsigned char mask[] = {0xd0, 0xb0, 0x04, 0x6a};
+    rtn.insert(rtn.size(),(char*)mask, 4);
+    for(size_t i = 0; i < str_in.size(); i++){
+      rtn.push_back(str_in.at(i)^mask[i%4]);
     }
     return rtn;
   }

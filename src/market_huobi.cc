@@ -44,7 +44,7 @@ void MarketHuobi::StartWatch(){
     }
   }*/
   std::shared_ptr<AsioHttpsRequest> request = std::make_shared<AsioHttpsRequest>();
-  request->config_.ssl_ = false;
+  request->config_.ssl_ = true;
   request->config_.use_proxy_ = true;
   request->config_.websocket_ = true;
   request->config_.proxy_.url_ = "127.0.0.1";
@@ -194,7 +194,7 @@ void MarketHuobi::OnGetTradeHistoryWebsocket(std::shared_ptr<AsioHttpsRequest> r
       }
       std::string out = HandleWebSocketMessage(str_unzip);
       if(out.size()){
-        std::cout<<"write:"<<out<<std::endl;
+
 
         std::string str_zip;
         /*{
@@ -205,11 +205,14 @@ void MarketHuobi::OnGetTradeHistoryWebsocket(std::shared_ptr<AsioHttpsRequest> r
           fos << std::flush;
           std::cout<<str_zip<<std::endl;
         }*/
-        //boost::algorithm::replace_all(out, "ping", "pong");
-        str_zip = "{\"req\": \"market.btcusdt.kline.1min\",\"id\": \"id10\"}";
+
+
+        boost::algorithm::replace_all(out, "ping", "pong");
+        std::cout<<"write:"<<out<<std::endl;
+        str_zip = out;
         std::string send_msg = WebSocketMessage::Encode(str_zip);
 
-        send_msg.insert(send_msg.end(), str_zip.begin(), str_zip.end());
+        //send_msg.insert(send_msg.end(), str_zip.begin(), str_zip.end());
         socket->SocketSend(send_msg);
       }
     }
