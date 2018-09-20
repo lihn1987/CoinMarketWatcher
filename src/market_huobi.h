@@ -12,6 +12,7 @@ public:
   virtual void StartWatch();
 
 private:
+  void StartGetTradeHistory();
   void OnGetDepth(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::string coin_for, std::string coin_base);
   void OnGetTradeHistory(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::string coin_for, std::string coin_base);
   void OnGetTradeHistoryWebsocket(std::shared_ptr<AsioHttpsRequest> request, std::shared_ptr<HttpResponseMsgStruct> responce, std::shared_ptr<AsioHttpsSocket> socket);
@@ -24,7 +25,7 @@ public:
   boost::signals2::connection AddTradeHistroyChangeWatcher(boost::function<void(std::string , std::string, TradeHistory)> callback);
 private:
   AsioHttps asio_https_;
-
+  bool b_trade_history_connected;
   std::map<std::string, std::vector<std::string>> market_pair_map_;
   std::map<std::string,CoinInfo> coin_info_;
   std::map<std::string,std::shared_ptr<AsioHttpsSocket> > depth_socket_map_;
@@ -36,6 +37,7 @@ private:
 private:
   std::string HandleWebSocketMessage(const std::string& str_in);
   bool HandleWebSocketPing(boost::property_tree::ptree& pt, std::string& str_out);
+  bool HandleWebSocketTradeHistory(boost::property_tree::ptree& pt, std::string& str_out);
   void InitMarketPair();
 
 private:

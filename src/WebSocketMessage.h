@@ -3,6 +3,8 @@
 #include <string>
 #include <stdlib.h>
 #include <limits>
+#include <netdb.h>
+
 struct WebSocketHead{
   unsigned int op_code_:4;/*%x0：表示一个延续帧。当Opcode为0时，表示本次数据传输采用了数据分片，当前收到的数据帧为其中一个数据分片。
                             %x1：表示这是一个文本帧（frame）
@@ -30,6 +32,7 @@ struct WebSocketHead{
     if(len1 < 126){
       return len1;
     }else if(len1 == 126){
+      len2 = htons(len2);
       return len2;
     }else/* if(len1 == 127)*/{
       return ((uint64_t)len2<<48)|((uint64_t)len3<<32)|((uint64_t)len4<<16)|(uint64_t)len5;
@@ -60,7 +63,7 @@ struct WebSocketMessage{
   bool Decode(std::string& str_in){
     int head_len = head_.Decode(str_in);
     if(head_len > 0 && str_in.size() >= head_.GetLen()+head_len){
-      body_.assign(str_in, head_len, head_.GetLen()+head_len);
+      body_.assign(str_in, head_len, head_.GetLen());
       str_in.erase(0, head_.GetLen()+head_len);
       return true;
     }
