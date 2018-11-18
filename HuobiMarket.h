@@ -18,6 +18,7 @@ private:
   QWebSocket web_socket_;
   TradePair trade_pair_;
   QNetworkAccessManager network_manager_;
+  DelayState delay_state_;
 private:
   void InitMarket();
   void LoadTradePair();
@@ -26,12 +27,14 @@ private:
 public slots:
   void OnDepthConnected();
   void OnDepthDisConnected();
-  void OnDepthMsgReceived(const QByteArray &message);
+  void OnSubScribeMsgReceived(const QByteArray &message);
   void OnLoadTradePair();
 public:
   void StartWatch();
   std::list<std::pair<std::string, std::string>> GetMarketPair();
   CoinInfo GetCoinInfo(std::pair<std::string, std::string> pair);
+  DelayState GetDelayState();
+  std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
 };
 
 #endif // HUOBIMARKET_H

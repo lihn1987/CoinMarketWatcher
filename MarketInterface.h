@@ -4,7 +4,7 @@
 #include <boost/format.hpp>
 #include <QObject>
 #include <QDateTime>
-
+#include <QDebug>
 /*
  * 用于封装每个交易所所有交易对的类
  */
@@ -48,6 +48,24 @@ struct ActiveInfo{
   boost::posix_time::ptime last_time_;
   uint32_t interval_ = 0;
 };
+
+//封装对网络消息延时的监控
+class DelayState{
+public:
+  //刷新最近接收网络信息的时间，并返回消息延时
+  uint32_t Flush(uint64_t time_receive){
+    latest_time_ = time_receive;
+    return Delay();
+  }
+  //获取消息延时
+  uint32_t Delay(){
+    QDateTime time = QDateTime::currentDateTime();
+    qDebug()<<"消息延时为:"<<(time.toMSecsSinceEpoch() - latest_time_)/1000.0f<<"秒";
+    return time.toMSecsSinceEpoch() - latest_time_;
+  }
+private:
+  uint64_t latest_time_;
+};
 struct DepthInfo{
   std::list<std::pair<std::string, std::string>> bids_;//卖价，数量
   std::list<std::pair<std::string, std::string>> asks_;//买价，数量
@@ -80,7 +98,6 @@ struct TradeItem{
 };
 struct TradeHistory{
   std::list<TradeItem> trade_list_;
-  ActiveInfo active_info_;
 };
 class CoinInfo{
 public:
@@ -98,6 +115,7 @@ public:
   virtual void StartWatch() = 0;
   virtual std::list<std::pair<std::string, std::string>> GetMarketPair() = 0;
   virtual CoinInfo GetCoinInfo(std::pair<std::string, std::string> pair) = 0;
+  virtual DelayState GetDelayState() = 0;
 };
 
 #endif // MARKETINTERFACE_H

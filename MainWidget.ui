@@ -16,9 +16,9 @@
   <widget class="QTableWidget" name="tabHuobi">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>511</width>
+     <x>30</x>
+     <y>70</y>
+     <width>371</width>
      <height>231</height>
     </rect>
    </property>
@@ -30,33 +30,53 @@
      <string>交易对</string>
     </property>
    </column>
-   <column>
-    <property name="text">
-     <string>价格</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>交易量(btc)</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>上次更新时间</string>
-    </property>
-   </column>
   </widget>
   <widget class="QPushButton" name="btnHuobiTransactionStart">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>10</y>
+     <x>250</x>
+     <y>320</y>
      <width>151</width>
      <height>61</height>
     </rect>
    </property>
    <property name="text">
     <string>开始监控火币交易对</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>当前网络延时:</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="process_huobi">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>20</y>
+     <width>118</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>2000</number>
+   </property>
+   <property name="value">
+    <number>1000</number>
+   </property>
+   <property name="textVisible">
+    <bool>true</bool>
+   </property>
+   <property name="format">
+    <string>%v</string>
    </property>
   </widget>
  </widget>
