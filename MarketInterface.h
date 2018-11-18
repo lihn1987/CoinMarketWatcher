@@ -60,7 +60,7 @@ public:
   //获取消息延时
   uint32_t Delay(){
     QDateTime time = QDateTime::currentDateTime();
-    qDebug()<<"消息延时为:"<<(time.toMSecsSinceEpoch() - latest_time_)/1000.0f<<"秒";
+    //qDebug()<<"消息延时为:"<<(time.toMSecsSinceEpoch() - latest_time_)/1000.0f<<"秒";
     return time.toMSecsSinceEpoch() - latest_time_;
   }
 private:
@@ -69,6 +69,7 @@ private:
 struct DepthInfo{
   std::list<std::pair<std::string, std::string>> bids_;//卖价，数量
   std::list<std::pair<std::string, std::string>> asks_;//买价，数量
+  DelayState delay_state_;
 };
 
 //对每笔交易的封装
@@ -100,7 +101,7 @@ struct TradeItem{
 
 class CoinInfo{
 public:
-  DepthInfo depth_info_;
+  std::map<std::string/*symbol*/, DepthInfo> depth_info_;
   std::map<std::string/*symbol*/, std::list<TradeItem>> trade_list_;
 };
 

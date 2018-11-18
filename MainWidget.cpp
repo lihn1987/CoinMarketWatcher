@@ -27,6 +27,8 @@ void MainWidget::OnTimer(){
       QString symble = ui->tabHuobi->item(i, 0)->text();
       if(huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()].size()){
         ui->tabHuobi->setItem(i, 1, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()].back().price_.c_str()));
+        ui->tabHuobi->setItem(i, 2, new QTableWidgetItem(
+                                QString::number(huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].delay_state_.Delay())));
       }
     }
   }
@@ -50,7 +52,7 @@ void MainWidget::on_tabHuobi_activated(const QModelIndex &index){
 void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
 {
   QString symble = ui->tabHuobi->item(index.row(),0)->text();
-  //ui->tabHuobiTradeDetail->removeRow();
+  //刷新交易历史
   while(ui->tabHuobiTradeDetail->rowCount()){
     ui->tabHuobiTradeDetail->removeRow(0);
   }
@@ -70,5 +72,23 @@ void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
       ui->tabHuobiTradeDetail->setItem(ui->tabHuobiTradeDetail->rowCount()-1, 4
                                        ,new QTableWidgetItem(item.amount_.c_str()));
     }
+  }
+  //刷新挂盘
+  while(ui->tabHuobiDepthAsks->rowCount()){
+    ui->tabHuobiDepthAsks->removeRow(0);
+  }
+  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].asks_){
+    ui->tabHuobiDepthAsks->insertRow(0);
+    ui->tabHuobiDepthAsks->setItem(0, 0, new QTableWidgetItem(item.first.c_str()));
+    ui->tabHuobiDepthAsks->setItem(0, 1, new QTableWidgetItem(item.second.c_str()));
+  }
+
+  while(ui->tabHuobiDepthBids->rowCount()){
+    ui->tabHuobiDepthBids->removeRow(0);
+  }
+  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].bids_){
+    ui->tabHuobiDepthBids->insertRow(ui->tabHuobiDepthBids->rowCount());
+    ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 0, new QTableWidgetItem(item.first.c_str()));
+    ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 1, new QTableWidgetItem(item.second.c_str()));
   }
 }
