@@ -12,9 +12,11 @@ public:
   virtual ~HuobiMarket(){}
 private:
   std::list<std::pair<std::string, std::string>> market_pair_list_;
-  QWebSocket web_socket_depth_;
+  QWebSocket web_socket_;
 private:
   void InitMarket();
+  void SubScribeTradeDetail();
+  void SubScribeMarketDepth();
 public slots:
   void OnDepthConnected();
   void OnDepthDisConnected();

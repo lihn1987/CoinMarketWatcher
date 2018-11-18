@@ -1,7 +1,9 @@
 #ifndef MARKETINTERFACE_H
 #define MARKETINTERFACE_H
 #include <boost/date_time.hpp>
+#include <boost/format.hpp>
 #include <QObject>
+#include <QDateTime>
 struct ActiveInfo{
   boost::posix_time::ptime last_time_;
   uint32_t interval_ = 0;
@@ -16,7 +18,25 @@ struct TradeItem{
   std::string price_;//价格
   std::string amount_;//数量
   std::string direction_;//方向 sell,buy
-  std::string ts;//时间
+  std::string ts_;//时间
+  QString ToQString(){
+    QString rtn = "以%1的价格在%2的时候%3了%4币，当前id为%5";
+    QDateTime time;
+    time.setMSecsSinceEpoch(atol(ts_.data()));
+    rtn = rtn.arg(price_.data()).arg(time.toString("yyyy-MM-dd hh:mm:ss:zzz")).arg(direction_ == "sell"?"卖":"买").arg(amount_.data()).arg(id_.data());
+    return rtn;
+  }
+  std::string ToStdString(){
+    QDateTime time;
+    time.setMSecsSinceEpoch(atol(ts_.data()));
+    return (boost::format("以%1的价格在%2的时候%3了%4币，当前id为%5")
+         %price_
+         %time.toString("yyyy-MM-dd hh:mm:ss:zzz").toStdString()
+         %(direction_ == "sell"?"卖":"买")
+         %amount_.data()
+         %id_.data())
+        .str();
+  }
 };
 struct TradeHistory{
   std::list<TradeItem> trade_list_;
