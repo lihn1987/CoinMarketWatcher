@@ -18,6 +18,10 @@ public:
 private slots:
   void OnTimer();
   void on_btnHuobiTransactionStart_clicked();
+  void on_tabHuobi_activated(const QModelIndex &index);
+
+  void on_tabHuobi_clicked(const QModelIndex &index);
+
 private:
   void InitMarketPair();
 private:

@@ -69,8 +69,9 @@ private:
 struct DepthInfo{
   std::list<std::pair<std::string, std::string>> bids_;//卖价，数量
   std::list<std::pair<std::string, std::string>> asks_;//买价，数量
-  ActiveInfo active_info_;
 };
+
+//对每笔交易的封装
 struct TradeItem{
   std::string id_;//id
   std::string price_;//价格
@@ -96,13 +97,11 @@ struct TradeItem{
         .str();
   }
 };
-struct TradeHistory{
-  std::list<TradeItem> trade_list_;
-};
+
 class CoinInfo{
 public:
   DepthInfo depth_info_;
-  TradeHistory last_trade_history_;
+  std::map<std::string/*symbol*/, std::list<TradeItem>> trade_list_;
 };
 
 class MarketInterface : public QObject
@@ -114,7 +113,7 @@ public:
 public:
   virtual void StartWatch() = 0;
   virtual std::list<std::pair<std::string, std::string>> GetMarketPair() = 0;
-  virtual CoinInfo GetCoinInfo(std::pair<std::string, std::string> pair) = 0;
+  virtual CoinInfo& GetCoinInfo() = 0;
   virtual DelayState GetDelayState() = 0;
 };
 

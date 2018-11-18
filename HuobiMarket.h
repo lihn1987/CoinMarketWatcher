@@ -15,6 +15,7 @@ public:
   virtual ~HuobiMarket(){}
 private:
   std::list<std::pair<std::string, std::string>> market_pair_list_;
+  CoinInfo info_;
   QWebSocket web_socket_;
   TradePair trade_pair_;
   QNetworkAccessManager network_manager_;
@@ -32,7 +33,7 @@ public slots:
 public:
   void StartWatch();
   std::list<std::pair<std::string, std::string>> GetMarketPair();
-  CoinInfo GetCoinInfo(std::pair<std::string, std::string> pair);
+  CoinInfo& GetCoinInfo();
   DelayState GetDelayState();
   std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
 };

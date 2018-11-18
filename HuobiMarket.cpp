@@ -30,9 +30,9 @@ void HuobiMarket::SubScribeTradeDetail()
   for(const auto &item: trade_list){
     QString str = "{\
                   \"sub\": \"market.%1%2.trade.detail\",\
-                  \"id\": \"asdfew2323aedfry\"\
+                  \"id\": \"%3\"\
                 }";
-    str = str.arg(item.first.c_str()).arg(item.second.c_str());
+    str = str.arg(item.first.c_str()).arg(item.second.c_str()).arg(QString::number(qrand()));
     web_socket_.sendTextMessage(str);
   }
 }
@@ -42,9 +42,10 @@ void HuobiMarket::SubScribeMarketDepth(){
   for(const auto &item: trade_list){
     QString str = "{\
       \"req\": \"market.%1%2.depth.step0\",\
-      \"id\": \"asdfew2323aedfry\"\
+      \"id\": \"%3\"\
     }";
-    str = str.arg(item.first.c_str()).arg(item.second.c_str());
+
+    str = str.arg(item.first.c_str()).arg(item.second.c_str()).arg(QString::number(qrand()));
     web_socket_.sendTextMessage(str);
   }
 }
@@ -89,7 +90,13 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
         if(value != "-1"){
           qDebug()<<"处理tradedetail信息";
           try{
+            //刷新延时
             delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
+            //分析币种
+            std::string str_ch = pt.get<std::string>("ch");
+            std::vector<std::string> ch_tmp;
+            boost::split(ch_tmp, str_ch, boost::is_any_of("."));
+            str_ch = ch_tmp[1];
             for(boost::property_tree::ptree::value_type value_item: pt.get_child("tick.data")){
               TradeItem trade_item;
               trade_item.id_ = value_item.second.get<std::string>("id");
@@ -97,6 +104,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
               trade_item.amount_ = value_item.second.get<std::string>("amount");
               trade_item.direction_ = value_item.second.get<std::string>("direction");
               trade_item.ts_ = value_item.second.get<std::string>("ts");
+              info_.trade_list_[str_ch].push_back(trade_item);
               //trade_history.trade_list_.push_back(trade_item);
               qDebug()<<"处理tradedetail信息成功";
               qDebug()<<trade_item.ToQString();
@@ -148,8 +156,8 @@ std::list<std::pair<std::string, std::string> > HuobiMarket::GetMarketPair(){
   return market_pair_list_;
 }
 
-CoinInfo HuobiMarket::GetCoinInfo(std::pair<std::string, std::string> pair){
-  return CoinInfo();
+CoinInfo& HuobiMarket::GetCoinInfo(){
+  return info_;
 }
 
 DelayState HuobiMarket::GetDelayState(){
