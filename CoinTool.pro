@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         MainWidget.cpp \
     MarketInterface.cpp \
-    HuobiMarket.cpp
+    HuobiMarket.cpp \
+    QuantitativeTransaction.cpp
 
 HEADERS += \
         MainWidget.h \
     MarketInterface.h \
-    HuobiMarket.h
+    HuobiMarket.h \
+    QuantitativeTransaction.h
 
 FORMS += \
         MainWidget.ui

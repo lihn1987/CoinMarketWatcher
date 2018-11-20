@@ -7,6 +7,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QTimer>
+#include "QuantitativeTransaction.h"
 
 class HuobiMarket : public MarketInterface
 {
@@ -27,6 +28,7 @@ private:
   void LoadTradePair();
   void SubScribeTradeDetail();
   void SubScribeMarketDepth();
+  void Compute(const std::string& coin_symble);
 public slots:
   void OnConnected();
   void OnDisConnected();
@@ -38,6 +40,7 @@ public:
   CoinInfo& GetCoinInfo();
   DelayState GetDelayState();
   std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
+  std::list<QuantitativeTransactionItem> trade_list_;
 };
 
 #endif // HUOBIMARKET_H

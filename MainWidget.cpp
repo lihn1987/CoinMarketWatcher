@@ -45,10 +45,6 @@ void MainWidget::InitMarketPair()
 {
 }
 
-void MainWidget::on_tabHuobi_activated(const QModelIndex &index){
-
-}
-
 void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
 {
   QString symble = ui->tabHuobi->item(index.row(),0)->text();
@@ -90,5 +86,11 @@ void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
     ui->tabHuobiDepthBids->insertRow(ui->tabHuobiDepthBids->rowCount());
     ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 0, new QTableWidgetItem(item.first.c_str()));
     ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 1, new QTableWidgetItem(item.second.c_str()));
+  }
+}
+
+void MainWidget::on_btn_buyQuantitative_1_clicked(){
+  if(ui->cb_buyQuantitative_1->checkState() == Qt::Checked){
+
   }
 }

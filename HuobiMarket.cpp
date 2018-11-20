@@ -52,6 +52,23 @@ void HuobiMarket::SubScribeMarketDepth(){
   }
 }
 
+void HuobiMarket::Compute(const std::string &coin_symble){
+  /*bool is_false = false;
+  for(std::list<QuantitativeTransactionItem>::iterator iter = trade_list_.begin();
+      iter != trade_list_.end();
+      iter++){
+    if(is_false){
+      coin_symble.erase(coin_symble);
+      continue;
+    }
+    if(1){
+      iter->coin_symble_.insert(coin_symble);
+    }else{
+      iter->coin_symble_.erase(coin_symble);
+    }
+  }*/
+}
+
 void HuobiMarket::OnConnected(){
   qDebug()<<"connected!";
   SubScribeTradeDetail();
