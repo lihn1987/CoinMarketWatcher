@@ -53,20 +53,14 @@ void HuobiMarket::SubScribeMarketDepth(){
 }
 
 void HuobiMarket::Compute(const std::string &coin_symble){
-  /*bool is_false = false;
-  for(std::list<QuantitativeTransactionItem>::iterator iter = trade_list_.begin();
-      iter != trade_list_.end();
-      iter++){
-    if(is_false){
-      coin_symble.erase(coin_symble);
-      continue;
+  bool pass = true;
+  for(size_t i = 0; i < buy_quan_list_.size(); i++){
+    if(pass == false){
+      buy_quan_list_[i].RemoveSymble(coin_symble);
+    }else if(!buy_quan_list_[i].Compute(coin_symble, info_)){
+      pass = false;
     }
-    if(1){
-      iter->coin_symble_.insert(coin_symble);
-    }else{
-      iter->coin_symble_.erase(coin_symble);
-    }
-  }*/
+  }
 }
 
 void HuobiMarket::OnConnected(){
@@ -74,8 +68,8 @@ void HuobiMarket::OnConnected(){
   SubScribeTradeDetail();
   SubScribeMarketDepth();
   SubScribeMarketDepth();
-  SubScribeMarketDepth();
-  SubScribeMarketDepth();
+  //SubScribeMarketDepth();
+  //SubScribeMarketDepth();
   SubScribeMarketDepth();
   //depth_timer_.start(100);
 }
@@ -139,6 +133,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
           }
         }
         info_.depth_info_[str_ch].delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
+        Compute(str_ch);
         SubScribeMarketDepth();
         //std::string str_ch = pt.get<std::string>("ch");
       }else{

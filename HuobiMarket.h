@@ -35,12 +35,14 @@ public slots:
   void OnSubScribeMsgReceived(const QByteArray &message);
   void OnLoadTradePair();
 public:
+  std::vector<QuantitativeTransactionItem> buy_quan_list_;
+public:
   void StartWatch();
   std::list<std::pair<std::string, std::string>> GetMarketPair();
   CoinInfo& GetCoinInfo();
   DelayState GetDelayState();
   std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
-  std::list<QuantitativeTransactionItem> trade_list_;
+
 };
 
 #endif // HUOBIMARKET_H

@@ -68,7 +68,7 @@
         <item>
          <widget class="QProgressBar" name="process_huobi">
           <property name="maximum">
-           <number>2000</number>
+           <number>10000</number>
           </property>
           <property name="value">
            <number>1000</number>
@@ -208,7 +208,7 @@
          <bool>true</bool>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
@@ -261,15 +261,161 @@
   <widget class="QPushButton" name="btn_buyQuantitative_1">
    <property name="geometry">
     <rect>
-     <x>480</x>
-     <y>630</y>
+     <x>830</x>
+     <y>440</y>
      <width>191</width>
      <height>81</height>
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>应用买入条件</string>
    </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>450</y>
+     <width>371</width>
+     <height>68</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_10">
+    <item>
+     <widget class="QCheckBox" name="cb_buyQuantitative_2">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLineEdit" name="edt_param_1_2"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>秒</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="cb_quan_type_2">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>交易量(BTC)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>交易次数</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="cb_param_2_2">
+          <item>
+           <property name="text">
+            <string>&gt;</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>&lt;</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_11">
+        <item>
+         <widget class="QRadioButton" name="radio_param_31_2">
+          <property name="text">
+           <string>当前</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_Param_41_2"/>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radio_param_32_2">
+          <property name="text">
+           <string>过去</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_Param_42_2"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>秒</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_Param_5_2"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>%</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QTableWidget" name="tab_buyQuantitative_2">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>570</y>
+     <width>371</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string>交易对</string>
+    </property>
+   </column>
   </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
@@ -298,8 +444,28 @@
         <item>
          <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>秒交易量</string>
+           <string>秒</string>
           </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="cb_quan_type_1">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>交易量(BTC)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>交易次数</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>
@@ -316,19 +482,6 @@
           </item>
          </widget>
         </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
       <item>
@@ -337,6 +490,9 @@
          <widget class="QRadioButton" name="radio_param_31_1">
           <property name="text">
            <string>当前</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
