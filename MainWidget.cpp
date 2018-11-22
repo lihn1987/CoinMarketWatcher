@@ -37,7 +37,7 @@ void MainWidget::OnTimer(){
   ui->process_huobi->setValue(huobi_delay > ui->process_huobi->maximum()?ui->process_huobi->maximum():huobi_delay);
 
   //刷新可购买量化列表
-  std::vector<QTableWidget*> buy_quan_list = {ui->tab_buyQuantitative_1, ui->tab_buyQuantitative_2};
+  std::vector<QTableWidget*> buy_quan_list = {ui->tab_buyQuantitative_1, ui->tab_buyQuantitative_2, ui->tab_buyQuantitative_3, ui->tab_buyQuantitative_4, ui->tab_buyQuantitative_5, ui->tab_buyQuantitative_6, ui->tab_buyQuantitative_7, ui->tab_buyQuantitative_8, ui->tab_buyQuantitative_9, ui->tab_buyQuantitative_10};
   for(size_t i = 0; i < buy_quan_list.size(); i++){
     while(buy_quan_list[i]->rowCount()){
       buy_quan_list[i]->removeRow(0);
@@ -47,6 +47,10 @@ void MainWidget::OnTimer(){
     for(const std::string& item:huobi_market_.buy_quan_list_[i].GetCoinSymbleSet()){
       buy_quan_list[i]->insertRow(0);
       buy_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
+      if(i != 0){
+        int debug = 0;
+        debug = 1;
+      }
     }
   }
 
@@ -106,14 +110,24 @@ void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
 
 void MainWidget::on_btn_buyQuantitative_1_clicked(){
   huobi_market_.buy_quan_list_.clear();
-  std::vector<QComboBox*> quan_type_list = {ui->cb_quan_type_1, ui->cb_quan_type_2};
-  std::vector<QCheckBox*> use_quan_list = {ui->cb_buyQuantitative_1, ui->cb_buyQuantitative_2};
-  std::vector<QLineEdit*> param1_list = {ui->edt_param_1_1, ui->edt_param_1_2};
-  std::vector<QComboBox*> param2_list = {ui->cb_param_2_1, ui->cb_param_2_2};
-  std::vector<QRadioButton*> param3_list = {ui->radio_param_31_1, ui->radio_param_31_2};
-  std::vector<QLineEdit*> param41_list = {ui->edt_Param_41_1, ui->edt_Param_41_2};
-  std::vector<QLineEdit*> param42_list = {ui->edt_Param_42_1, ui->edt_Param_42_2};
-  std::vector<QLineEdit*> param5_list = {ui->edt_Param_5_1, ui->edt_Param_5_2};
+  std::vector<QComboBox*> quan_type_list;
+  std::vector<QCheckBox*> use_quan_list;
+  std::vector<QLineEdit*> param1_list;
+  std::vector<QComboBox*> param2_list;
+  std::vector<QRadioButton*> param3_list;
+  std::vector<QLineEdit*> param41_list;
+  std::vector<QLineEdit*> param42_list;
+  std::vector<QLineEdit*> param5_list;
+  for(int i = 0; i < 10; i++){
+    quan_type_list.push_back(findChild<QComboBox *>(QString("cb_quan_type_%1").arg(i+1)));
+    use_quan_list.push_back(findChild<QCheckBox *>(QString("cb_buyQuantitative_%1").arg(i+1)));
+    param1_list.push_back(findChild<QLineEdit *>(QString("edt_param_1_%1").arg(i+1)));
+    param2_list.push_back(findChild<QComboBox *>(QString("cb_param_2_%1").arg(i+1)));
+    param3_list.push_back(findChild<QRadioButton *>(QString("radio_param_31_%1").arg(i+1)));
+    param41_list.push_back(findChild<QLineEdit *>(QString("edt_Param_41_%1").arg(i+1)));
+    param42_list.push_back(findChild<QLineEdit *>(QString("edt_Param_42_%1").arg(i+1)));
+    param5_list.push_back(findChild<QLineEdit *>(QString("edt_Param_5_%1").arg(i+1)));
+  }
   for(size_t i = 0; i < use_quan_list.size(); i++){
     if(use_quan_list[i]->checkState() == Qt::Checked){
       std::vector<std::string> param_list;
@@ -132,43 +146,4 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
       huobi_market_.buy_quan_list_.push_back(quan_item);
     }
   }
-
-
-
-/*
-
-
-  if(ui->cb_buyQuantitative_1->checkState() == Qt::Checked){
-    std::vector<std::string> param_list;
-    param_list.push_back(ui->edt_param_1_1->text().toStdString());
-    param_list.push_back((ui->cb_param_2_1->currentIndex() == 0)?"1":"2");
-    if(ui->radio_param_31_1->isChecked() == true){
-      param_list.push_back("1");
-      param_list.push_back(ui->edt_Param_41_1->text().toStdString());
-    }else{
-      param_list.push_back("2");
-      param_list.push_back(ui->edt_Param_42_1->text().toStdString());
-      param_list.push_back(ui->edt_Param_5_1->text().toStdString());
-    }
-    QuantitativeTransactionItem quan_item;
-    quan_item.Init(QuantitativeComputeType::QC_TransactionValueSum, param_list);
-    huobi_market_.buy_quan_list_.push_back(quan_item);
-  }
-  if(ui->cb_buyQuantitative_2->checkState() == Qt::Checked){
-    std::vector<std::string> param_list;
-    param_list.push_back(ui->edt_param_1_2->text().toStdString());
-    param_list.push_back((ui->cb_param_2_2->currentIndex() == 0)?"1":"2");
-    if(ui->radio_param_31_1->isChecked() == true){
-      param_list.push_back("1");
-      param_list.push_back(ui->edt_Param_41_2->text().toStdString());
-    }else{
-      param_list.push_back("2");
-      param_list.push_back(ui->edt_Param_42_2->text().toStdString());
-      param_list.push_back(ui->edt_Param_5_2->text().toStdString());
-    }
-    QuantitativeTransactionItem quan_item;
-    quan_item.Init(QuantitativeComputeType::QC_TransactionValueSum, param_list);
-    huobi_market_.buy_quan_list_.push_back(quan_item);
-  }
-  */
 }

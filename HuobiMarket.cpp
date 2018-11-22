@@ -69,7 +69,7 @@ void HuobiMarket::OnConnected(){
   SubScribeMarketDepth();
   SubScribeMarketDepth();
   //SubScribeMarketDepth();
-  //SubScribeMarketDepth();
+  SubScribeMarketDepth();
   SubScribeMarketDepth();
   //depth_timer_.start(100);
 }
