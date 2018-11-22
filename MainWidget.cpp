@@ -24,16 +24,16 @@ void MainWidget::OnTimer(){
     }
   }else{
     for(int i = 0; i < ui->tabHuobi->rowCount(); i++){
-      QString symble = ui->tabHuobi->item(i, 0)->text();
-      if(huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()].size()){
-        ui->tabHuobi->setItem(i, 1, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()].back().price_.c_str()));
+      QString symbol = ui->tabHuobi->item(i, 0)->text();
+      if(huobi_market_.GetCoinInfo().trade_list_[symbol.toStdString()].size()){
+        ui->tabHuobi->setItem(i, 1, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[symbol.toStdString()].back().price_.c_str()));
         ui->tabHuobi->setItem(i, 2, new QTableWidgetItem(
-                                QString::number(huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].delay_state_.Delay())));
+                                QString::number(huobi_market_.GetCoinInfo().depth_info_[symbol.toStdString()].delay_state_.Delay())));
       }
     }
   }
   //刷新火币延时
-  uint32_t huobi_delay = huobi_market_.GetDelayState().Delay();
+  int huobi_delay = (int)huobi_market_.GetDelayState().Delay();
   ui->process_huobi->setValue(huobi_delay > ui->process_huobi->maximum()?ui->process_huobi->maximum():huobi_delay);
 
   //刷新可购买量化列表
@@ -44,13 +44,9 @@ void MainWidget::OnTimer(){
     }
   }
   for(size_t i = 0; i < huobi_market_.buy_quan_list_.size(); i++){
-    for(const std::string& item:huobi_market_.buy_quan_list_[i].GetCoinSymbleSet()){
+    for(const std::string& item:huobi_market_.buy_quan_list_[i].GetCoinsymbolSet()){
       buy_quan_list[i]->insertRow(0);
       buy_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
-      if(i != 0){
-        int debug = 0;
-        debug = 1;
-      }
     }
   }
 
@@ -66,13 +62,13 @@ void MainWidget::InitMarketPair()
 
 void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
 {
-  QString symble = ui->tabHuobi->item(index.row(),0)->text();
+  QString symbol = ui->tabHuobi->item(index.row(),0)->text();
   //刷新交易历史
   while(ui->tabHuobiTradeDetail->rowCount()){
     ui->tabHuobiTradeDetail->removeRow(0);
   }
-  if(huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()].size()){
-    for(const TradeItem& item:huobi_market_.GetCoinInfo().trade_list_[symble.toStdString()]){
+  if(huobi_market_.GetCoinInfo().trade_list_[symbol.toStdString()].size()){
+    for(const TradeItem& item:huobi_market_.GetCoinInfo().trade_list_[symbol.toStdString()]){
       ui->tabHuobiTradeDetail->insertRow(ui->tabHuobiTradeDetail->rowCount());
       ui->tabHuobiTradeDetail->setItem(ui->tabHuobiTradeDetail->rowCount()-1, 0
                                        ,new QTableWidgetItem(item.id_.c_str()));
@@ -92,7 +88,7 @@ void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
   while(ui->tabHuobiDepthAsks->rowCount()){
     ui->tabHuobiDepthAsks->removeRow(0);
   }
-  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].asks_){
+  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symbol.toStdString()].asks_){
     ui->tabHuobiDepthAsks->insertRow(0);
     ui->tabHuobiDepthAsks->setItem(0, 0, new QTableWidgetItem(item.first.c_str()));
     ui->tabHuobiDepthAsks->setItem(0, 1, new QTableWidgetItem(item.second.c_str()));
@@ -101,7 +97,7 @@ void MainWidget::on_tabHuobi_clicked(const QModelIndex &index)
   while(ui->tabHuobiDepthBids->rowCount()){
     ui->tabHuobiDepthBids->removeRow(0);
   }
-  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symble.toStdString()].bids_){
+  for(std::pair<std::string, std::string> item: huobi_market_.GetCoinInfo().depth_info_[symbol.toStdString()].bids_){
     ui->tabHuobiDepthBids->insertRow(ui->tabHuobiDepthBids->rowCount());
     ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 0, new QTableWidgetItem(item.first.c_str()));
     ui->tabHuobiDepthBids->setItem(ui->tabHuobiDepthBids->rowCount()-1, 1, new QTableWidgetItem(item.second.c_str()));

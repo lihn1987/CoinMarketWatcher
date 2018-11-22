@@ -6,8 +6,10 @@
 #include "MarketInterface.h"
 enum QuantitativeComputeType{
   QC_INVALIDATE = -1,
-  QC_TransactionValueSum = 0,
-  QC_TransactionTimeSum = 1
+  QC_TransactionValueSum = 0,//交易总量
+  QC_TransactionTimeSum = 1,//交易总次数
+  QC_TransactionBuySellValueScale = 2,//买卖交易量比例
+  QC_TransactionBuySellTimeScale = 3,//买卖交易数比例
 };
 
 class QuantitativeTransactionItem{
@@ -18,117 +20,16 @@ private:
                              2:pravious(2) 3 second  4 persent
   */
   std::vector<std::string> param_list_;
-  std::set<std::string> coin_symble_;
+  std::set<std::string> coin_symbol_;
 public:
-  void Init(QuantitativeComputeType type, std::vector<std::string>& param_list){
-    compute_type_ = type;
-    param_list_ = param_list;
-  }
-  std::set<std::string> GetCoinSymbleSet(){
-    return coin_symble_;
-  }
-  void RemoveSymble(const std::string& symble){
-    coin_symble_.erase(symble);
-  }
-  bool Compute(const std::string &coin_symble, CoinInfo& info){
-    switch(compute_type_){
-      case QuantitativeComputeType::QC_TransactionValueSum:
-        return ComputeValueSum(coin_symble, info);
-        break;
-      case QuantitativeComputeType::QC_TransactionTimeSum:
-        return ComputeTimeSum(coin_symble, info);
-        break;
-      default:
-        return false;
-    }
-  }
-  bool ComputeValueSum(const std::string &coin_symble, CoinInfo& info){
-    if(!boost::algorithm::ends_with(coin_symble, "btc"))return false;
-    if((atoi(param_list_[2].c_str()) == 1 && param_list_.size() < 4)||
-       (atoi(param_list_[2].c_str()) == 2 && param_list_.size() < 5))
-      return false;
-    double value_count = 0;
-    double pravious_count = 0;
-    for(auto iter = info.trade_list_[coin_symble].rbegin(); iter != info.trade_list_[coin_symble].rend(); iter++){
-      QDateTime time = QDateTime::currentDateTime();
-      if(time.toMSecsSinceEpoch() - atoll(iter->ts_.data()) < 1000*atol(param_list_[0].c_str())){
-        value_count+=atof(iter->amount_.c_str())*atof(iter->price_.c_str());
-      }else{
-        break;
-      }
-    }
-    for(auto iter = info.trade_list_[coin_symble].rbegin(); iter != info.trade_list_[coin_symble].rend(); iter++){
-      QDateTime time = QDateTime::currentDateTime();
-      if(time.toMSecsSinceEpoch() - atoll(iter->ts_.data()) < 1000*atol(param_list_[3].c_str())){
-        pravious_count+=atof(iter->amount_.c_str())*atof(iter->price_.c_str());
-      }else{
-        break;
-      }
-    }
-    if(atoi(param_list_[2].c_str()) == 1){
-      if(atoi(param_list_[1].c_str()) == 1 && value_count > atof(param_list_[3].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }else if(atoi(param_list_[1].c_str()) == 2 && value_count < atof(param_list_[3].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }
-    }else if(atoi(param_list_[2].c_str()) == 2){
-      if(atoi(param_list_[1].c_str()) == 1 && (value_count/atoi(param_list_[0].c_str()))/(pravious_count/atoi(param_list_[3].c_str()))*100 > atof(param_list_[4].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }else if(atoi(param_list_[1].c_str()) == 2 && (value_count/atoi(param_list_[0].c_str()))/(pravious_count/atoi(param_list_[3].c_str()))*100 < atof(param_list_[4].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }
-    }
-    coin_symble_.erase(coin_symble);
-    return false;
-  }
-  bool ComputeTimeSum(const std::string &coin_symble, CoinInfo& info){
-    if(!boost::algorithm::ends_with(coin_symble, "btc"))return false;
-    if((atoi(param_list_[2].c_str()) == 1 && param_list_.size() < 4)||
-       (atoi(param_list_[2].c_str()) == 2 && param_list_.size() < 5))
-      return false;
-    double value_count = 0;
-    double pravious_count = 0;
-    for(auto iter = info.trade_list_[coin_symble].rbegin(); iter != info.trade_list_[coin_symble].rend(); iter++){
-      QDateTime time = QDateTime::currentDateTime();
-      if(time.toMSecsSinceEpoch() - atoll(iter->ts_.data()) < 1000*atol(param_list_[0].c_str())){
-        value_count+=1;
-      }else{
-        break;
-      }
-    }
-    for(auto iter = info.trade_list_[coin_symble].rbegin(); iter != info.trade_list_[coin_symble].rend(); iter++){
-      QDateTime time = QDateTime::currentDateTime();
-      if(time.toMSecsSinceEpoch() - atoll(iter->ts_.data()) < 1000*atol(param_list_[3].c_str())){
-        pravious_count+=1;
-      }else{
-        break;
-      }
-    }
-    if(atoi(param_list_[2].c_str()) == 1){
-      if(atoi(param_list_[1].c_str()) == 1 && value_count > atof(param_list_[3].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }else if(atoi(param_list_[1].c_str()) == 2 && value_count < atof(param_list_[3].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }
-    }else if(atoi(param_list_[2].c_str()) == 2){
-      if(atoi(param_list_[1].c_str()) == 1 && (value_count/atoi(param_list_[0].c_str()))/(pravious_count/atoi(param_list_[3].c_str()))*100 > atof(param_list_[4].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }else if(atoi(param_list_[1].c_str()) == 2 && (value_count/atoi(param_list_[0].c_str()))/(pravious_count/atoi(param_list_[3].c_str()))*100 < atof(param_list_[4].c_str())){
-        coin_symble_.insert(coin_symble);
-        return true;
-      }
-    }
-    coin_symble_.erase(coin_symble);
-    return false;
-  }
+  void Init(QuantitativeComputeType type, std::vector<std::string>& param_list);
+  std::set<std::string> GetCoinsymbolSet();
+  void Removesymbol(const std::string& symbol);
+  bool Compute(const std::string &coin_symbol, CoinInfo& info);
+  bool ComputeValueSum(const std::string &coin_symbol, CoinInfo& info);
+  bool ComputeTimeSum(const std::string &coin_symbol, CoinInfo& info);
+  bool ComputeBuySellValueScale(const std::string &coin_symbol, CoinInfo& info);
+  bool ComputeBuySellTimeScale(const std::string &coin_symbol, CoinInfo& info);
+
 };
-
-
 #endif // QUANTITATIVETRANSACTION_H

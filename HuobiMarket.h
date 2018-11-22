@@ -28,7 +28,8 @@ private:
   void LoadTradePair();
   void SubScribeTradeDetail();
   void SubScribeMarketDepth();
-  void Compute(const std::string& coin_symble);
+  void Compute(const std::string& coin_symbol);
+  void Disconnect();
 public slots:
   void OnConnected();
   void OnDisConnected();

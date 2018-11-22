@@ -52,15 +52,20 @@ void HuobiMarket::SubScribeMarketDepth(){
   }
 }
 
-void HuobiMarket::Compute(const std::string &coin_symble){
+void HuobiMarket::Compute(const std::string &coin_symbol){
   bool pass = true;
   for(size_t i = 0; i < buy_quan_list_.size(); i++){
     if(pass == false){
-      buy_quan_list_[i].RemoveSymble(coin_symble);
-    }else if(!buy_quan_list_[i].Compute(coin_symble, info_)){
+      buy_quan_list_[i].Removesymbol(coin_symbol);
+    }else if(!buy_quan_list_[i].Compute(coin_symbol, info_)){
       pass = false;
     }
   }
+}
+
+void HuobiMarket::Disconnect(){
+ //TODO:头几条消息延时会非常长，不能从一开始就记录超时
+ // web_socket_.close();
 }
 
 void HuobiMarket::OnConnected(){
@@ -94,19 +99,21 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
   try{
     boost::property_tree::read_json(istm, pt);
     std::string value = pt.get<std::string>("ping", "-1");
-    if(value != "-1"){
+    if(value != "-1"){//处理pingpong
       qDebug()<<"处理ping信息";
       std::string str_out = (boost::format("{\"pong\":%s}")%value).str();
       delay_state_.Flush(atol(value.c_str()));
       web_socket_.sendTextMessage(QString::fromStdString(str_out));
     }
-    else{
+    else{//处理深度信息
       value = pt.get<std::string>("rep", "-1");
 
-      if(value.find("depth") != -1){
+      if(value.find("depth") != std::string::npos){
         qDebug()<<"处理depth信息";
         //刷新延时
-        delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
+        if(delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()))>10000){
+          Disconnect();
+        }
         //分析币种
         std::string str_ch = pt.get<std::string>("rep");
         std::vector<std::string> ch_tmp;
@@ -136,13 +143,15 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
         Compute(str_ch);
         SubScribeMarketDepth();
         //std::string str_ch = pt.get<std::string>("ch");
-      }else{
+      }else{//处理交易信息
         value = pt.get<std::string>("ch", "-1");
         if(value != "-1"){
           qDebug()<<"处理tradedetail信息";
           try{
             //刷新延时
-            delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
+            if(delay_state_.Flush(atol(pt.get<std::string>("ts").c_str())) > 10000){
+              Disconnect();
+            }
             //分析币种
             std::string str_ch = pt.get<std::string>("ch");
             std::vector<std::string> ch_tmp;

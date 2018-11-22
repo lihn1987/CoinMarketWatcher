@@ -190,7 +190,7 @@
          <bool>true</bool>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <column>
          <property name="text">
@@ -329,6 +329,16 @@
                      <string>交易次数</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -459,6 +469,16 @@
                    <item>
                     <property name="text">
                      <string>交易次数</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
                     </property>
                    </item>
                   </widget>
@@ -606,6 +626,16 @@
                      <string>交易次数</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -749,6 +779,16 @@
                    <item>
                     <property name="text">
                      <string>交易次数</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
                     </property>
                    </item>
                   </widget>
@@ -896,6 +936,16 @@
                      <string>交易次数</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -1039,6 +1089,16 @@
                    <item>
                     <property name="text">
                      <string>交易次数</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
                     </property>
                    </item>
                   </widget>
@@ -1186,6 +1246,16 @@
                      <string>交易次数</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -1329,6 +1399,16 @@
                    <item>
                     <property name="text">
                      <string>交易次数</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
                     </property>
                    </item>
                   </widget>
@@ -1476,6 +1556,16 @@
                      <string>交易次数</string>
                     </property>
                    </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -1619,6 +1709,16 @@
                    <item>
                     <property name="text">
                      <string>交易次数</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易量买卖比</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>交易次数买卖比</string>
                     </property>
                    </item>
                   </widget>
