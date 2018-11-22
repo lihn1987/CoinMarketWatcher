@@ -143,3 +143,11 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
     }
   }
 }
+
+void MainWidget::on_btn_apply_config_clicked(){
+  QNetworkProxy proxy;
+  proxy.setType(QNetworkProxy::Socks5Proxy);
+  proxy.setHostName(ui->edt_proxy_ip->text());
+  proxy.setPort(ui->edt_proxy_port->text().toInt());
+  QNetworkProxy::setApplicationProxy(proxy);
+}
