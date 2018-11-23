@@ -10,6 +10,10 @@ std::set<std::string> QuantitativeTransactionItem::GetCoinsymbolSet(){
   return coin_symbol_;
 }
 
+QuantitativeComputeType QuantitativeTransactionItem::GetComputeType(){
+  return compute_type_;
+}
+
 void QuantitativeTransactionItem::Removesymbol(const std::string &symbol){
   coin_symbol_.erase(symbol);
 }
@@ -27,6 +31,15 @@ bool QuantitativeTransactionItem::Compute(const std::string &coin_symbol, CoinIn
       break;
     case QuantitativeComputeType::QC_TransactionBuySellTimeScale:
       return ComputeBuySellTimeScale(coin_symbol, info);
+      break;
+    case QuantitativeComputeType::QC_DepthBuySellMargin:
+      return ComputeBuySellMargin(coin_symbol, info);
+      break;
+    case QuantitativeComputeType::QC_DepthBuyCount:
+      return ComputeBuySellMargin(coin_symbol, info);
+      break;
+    case QuantitativeComputeType::QC_DepthSellCount:
+      return ComputeBuySellMargin(coin_symbol, info);
       break;
     default:
       return false;
@@ -231,4 +244,35 @@ bool QuantitativeTransactionItem::ComputeBuySellTimeScale(const std::string &coi
   }
   coin_symbol_.erase(coin_symbol);
   return false;
+}
+
+bool QuantitativeTransactionItem::ComputeBuySellMargin(const std::string &coin_symbol, CoinInfo &info)
+{
+//参数描述  卖盘最低价/买盘最高价 0:>(1) <(2) 1:value
+  if(!info.depth_info_[coin_symbol].asks_.size() ||
+     !info.depth_info_[coin_symbol].bids_.size()||
+     param_list_.size() < 2){
+    coin_symbol_.erase(coin_symbol);
+    return false;
+  }
+  double value_from = atof(info.depth_info_[coin_symbol].asks_.front().first.c_str())/
+      atof(info.depth_info_[coin_symbol].bids_.front().first.c_str()) -1.0f;
+  double value_to = atof(param_list_[1].c_str())/100.0f;
+  if((param_list_[0] == "1" && value_from > value_to)||
+     (param_list_[0] == "2" && value_from < value_to)){
+    coin_symbol_.insert(coin_symbol);
+    return true;
+  }
+  coin_symbol_.erase(coin_symbol);
+  return false;
+}
+
+bool QuantitativeTransactionItem::ComputeBuyCount(const std::string &coin_symbol, CoinInfo &info)
+{
+return false;
+}
+
+bool QuantitativeTransactionItem::ComputeSellCount(const std::string &coin_symbol, CoinInfo &info)
+{
+return false;
 }

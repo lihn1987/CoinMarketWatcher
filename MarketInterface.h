@@ -67,8 +67,8 @@ private:
   uint64_t latest_time_;
 };
 struct DepthInfo{
-  std::list<std::pair<std::string, std::string>> bids_;//卖价，数量
-  std::list<std::pair<std::string, std::string>> asks_;//买价，数量
+  std::list<std::pair<std::string/*价格*/, std::string/*数量*/>> bids_;//买价，数量begin->end 高->低
+  std::list<std::pair<std::string/*价格*/, std::string/*数量*/>> asks_;//卖价，数量begin->end 低->高
   DelayState delay_state_;
 };
 

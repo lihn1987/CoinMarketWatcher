@@ -44,9 +44,28 @@ void MainWidget::OnTimer(){
     }
   }
   for(size_t i = 0; i < huobi_market_.buy_quan_list_.size(); i++){
-    for(const std::string& item:huobi_market_.buy_quan_list_[i].GetCoinsymbolSet()){
-      buy_quan_list[i]->insertRow(0);
-      buy_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
+    if(huobi_market_.buy_quan_list_[i].GetComputeType() != QuantitativeComputeType::QC_DepthBuySellMargin &&
+    huobi_market_.buy_quan_list_[i].GetComputeType() != QuantitativeComputeType::QC_DepthBuyCount &&
+       huobi_market_.buy_quan_list_[i].GetComputeType() != QuantitativeComputeType::QC_DepthSellCount){
+      for(const std::string& item:huobi_market_.buy_quan_list_[i].GetCoinsymbolSet()){
+        buy_quan_list[i]->insertRow(0);
+        buy_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
+      }
+    }
+  }
+
+  if(huobi_market_.buy_quan_list_.size()){
+    QuantitativeTransactionItem & latest_item = huobi_market_.buy_quan_list_[huobi_market_.buy_quan_list_.size()-1];
+    if(latest_item.GetComputeType() == QuantitativeComputeType::QC_DepthBuySellMargin||
+       latest_item.GetComputeType() == QuantitativeComputeType::QC_DepthBuyCount||
+       latest_item.GetComputeType() == QuantitativeComputeType::QC_DepthSellCount){
+      while(ui->tab_buyQuantitative_depth->rowCount()){
+        ui->tab_buyQuantitative_depth->removeRow(0);
+      }
+      for(const std::string& item:latest_item.GetCoinsymbolSet()){
+        ui->tab_buyQuantitative_depth->insertRow(0);
+        ui->tab_buyQuantitative_depth->setItem(0, 0, new QTableWidgetItem(item.c_str()));
+      }
     }
   }
 
@@ -141,6 +160,46 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
       quan_item.Init((QuantitativeComputeType)(quan_type_list[i]->currentIndex()), param_list);
       huobi_market_.buy_quan_list_.push_back(quan_item);
     }
+  }
+  //深度条件
+  if(ui->cb_buy_depth1->isChecked() == true){
+    std::vector<std::string> param_list;
+    if(ui->cb_param_depth_1_1->currentIndex() == 0){
+      param_list.push_back("1");
+    }else{
+      param_list.push_back("2");
+    }
+    param_list.push_back(ui->edt_param_depth_2_1->text().toStdString());
+    QuantitativeTransactionItem quan_item;
+    quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+    huobi_market_.buy_quan_list_.push_back(quan_item);
+  }
+  if(ui->cb_buy_depth2->isChecked() == true){
+    std::vector<std::string> param_list;
+    param_list.push_back(ui->edt_param_depth_1_2->text().toStdString());
+    if(ui->cb_param_depth_2_2->currentIndex() == 0){
+      param_list.push_back("1");
+    }else{
+      param_list.push_back("2");
+    }
+    param_list.push_back(ui->edt_param_depth_3_2->text().toStdString());
+    QuantitativeTransactionItem quan_item;
+    quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+    huobi_market_.buy_quan_list_.push_back(quan_item);
+  }
+
+  if(ui->cb_buy_depth3->isChecked() == true){
+    std::vector<std::string> param_list;
+    param_list.push_back(ui->edt_param_depth_1_3->text().toStdString());
+    if(ui->cb_param_depth_2_3->currentIndex() == 0){
+      param_list.push_back("1");
+    }else{
+      param_list.push_back("2");
+    }
+    param_list.push_back(ui->edt_param_depth_3_3->text().toStdString());
+    QuantitativeTransactionItem quan_item;
+    quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+    huobi_market_.buy_quan_list_.push_back(quan_item);
   }
 }
 
