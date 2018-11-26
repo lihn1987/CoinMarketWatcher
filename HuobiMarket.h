@@ -44,6 +44,18 @@ public:
   DelayState GetDelayState();
   std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
 
+public://账户相关
+  void SetSimulate(bool is_simulate);
+  double GetBalanceBtcAll();
+  std::map<std::string/*symbol*/, double/*amount*/> GetBalanceAll();
+  double GetBalance(const std::string& symbol);
+  void SetBalance(const std::string& symbol, double amount);
+  void Buy(const std::string& symbol, double count);
+  void Sell(const std::string& symble, double count);
+private:
+  std::map<std::string/*symbol*/, double/*amount*/> balance_;
+  bool is_simulate_;
+
 };
 
 #endif // HUOBIMARKET_H

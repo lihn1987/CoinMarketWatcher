@@ -237,3 +237,65 @@ CoinInfo& HuobiMarket::GetCoinInfo(){
 DelayState HuobiMarket::GetDelayState(){
   return delay_state_;
 }
+
+void HuobiMarket::SetSimulate(bool is_simulate){
+  is_simulate_ = is_simulate;
+}
+
+double HuobiMarket::GetBalanceBtcAll(){
+  //info_.trade_list_[]
+  double rtn = 0;
+  for(std::pair<std::string/*symbol*/, double/*amount*/>item: balance_){
+    if(item.first == "btc"){
+      rtn += item.second;
+    }else if(item.second != 0){
+      std::string symbol = (boost::format("%1btc")%item.first).str();
+      if(info_.trade_list_.find(symbol) != info_.trade_list_.end()){
+        rtn += QString::fromStdString(info_.trade_list_[symbol].back().price_).toDouble()*item.second;
+      }
+    }
+  }
+  return rtn;
+}
+
+std::map<std::string, double> HuobiMarket::GetBalanceAll(){
+  return balance_;
+}
+
+double HuobiMarket::GetBalance(const std::string &symbol){
+  if(balance_.find(symbol) != balance_.end()){
+    return balance_[symbol];
+  }else{
+    return 0;
+  }
+}
+
+void HuobiMarket::SetBalance(const std::string &symbol, double amount){
+  balance_[symbol] = amount;
+}
+
+void HuobiMarket::Buy(const std::string &symbol, double count){
+  if(is_simulate_){//模拟买入
+    int idx = symbol.find_last_of("btc");
+    if(idx != -1){
+      std::string arm_coin_symbol = std::string(symbol.c_str(), idx);
+      if(balance_.find(arm_coin_symbol) == balance_.end()){
+        balance_[arm_coin_symbol] = 0;
+      }
+      double receive_count = count;
+      for(std::pair<std::string/*价格*/, std::string/*数量*/> item:info_.depth_info_[symbol].asks_){
+        if(atof(item.first.c_str())*atof(item.second.c_str()) <= receive_count){
+          receive_count -= atof(item.second.c_str())*atof(item.second.c_str());
+          balance_[arm_coin_symbol]+=atof(item.second.c_str());
+        }else{
+          balance_[arm_coin_symbol]+=receive_count/atof(item.first.c_str());
+        }
+      }
+      balance_["btc"] -= count;
+    }
+  }
+}
+
+void HuobiMarket::Sell(const std::string &symble, double count){
+
+}

@@ -36,10 +36,10 @@ bool QuantitativeTransactionItem::Compute(const std::string &coin_symbol, CoinIn
       return ComputeBuySellMargin(coin_symbol, info);
       break;
     case QuantitativeComputeType::QC_DepthBuyCount:
-      return ComputeBuySellMargin(coin_symbol, info);
+      return ComputeBuyCount(coin_symbol, info);
       break;
     case QuantitativeComputeType::QC_DepthSellCount:
-      return ComputeBuySellMargin(coin_symbol, info);
+      return ComputeSellCount(coin_symbol, info);
       break;
     default:
       return false;
@@ -267,9 +267,30 @@ bool QuantitativeTransactionItem::ComputeBuySellMargin(const std::string &coin_s
   return false;
 }
 
-bool QuantitativeTransactionItem::ComputeBuyCount(const std::string &coin_symbol, CoinInfo &info)
-{
-return false;
+bool QuantitativeTransactionItem::ComputeBuyCount(const std::string &coin_symbol, CoinInfo &info){
+  //参数描述 0:相对于卖盘买盘的差价百分比   买完需要的比特币个数 1:>(1) <(2)  2:value
+  if(param_list_.size() < 3){
+    coin_symbol_.erase(coin_symbol);
+    return false;
+  }
+  double max_price = QString::fromStdString(info.depth_info_[coin_symbol].bids_.front().first).toDouble()*(1+QString::fromStdString(param_list_[0].c_str()).toDouble()/100.0f);
+  double btc_arm_count = atof(param_list_[2].c_str());
+  double btc_real_count = 0;
+  for(std::pair<std::string/*价格*/, std::string/*数量*/> item:info.depth_info_[coin_symbol].asks_){
+    if(QString::fromStdString(item.first).toDouble() <= max_price){
+      btc_real_count+=QString::fromStdString(item.second).toLower().toDouble()*QString::fromStdString(item.first).toDouble();
+      qDebug()<<QString::fromStdString(item.second).toLower().toDouble();
+    }
+  }
+  if(param_list_[1] == "1" && btc_real_count > btc_arm_count){
+    coin_symbol_.insert(coin_symbol);
+    return true;
+  }else if(param_list_[1] == "2" && btc_arm_count < btc_real_count){
+    coin_symbol_.insert(coin_symbol);
+    return true;
+  }
+  coin_symbol_.erase(coin_symbol);
+  return false;
 }
 
 bool QuantitativeTransactionItem::ComputeSellCount(const std::string &coin_symbol, CoinInfo &info)

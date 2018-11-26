@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1167</width>
+    <width>1563</width>
     <height>860</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>420</y>
+     <y>340</y>
      <width>141</width>
      <height>17</height>
     </rect>
@@ -32,7 +32,7 @@
      <x>10</x>
      <y>90</y>
      <width>1137</width>
-     <height>331</height>
+     <height>241</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -190,7 +190,7 @@
          <bool>true</bool>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
@@ -257,7 +257,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>445</y>
+     <y>365</y>
      <width>691</width>
      <height>281</height>
     </rect>
@@ -1871,6 +1871,189 @@
     <string>应用</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_50">
+   <property name="geometry">
+    <rect>
+     <x>1170</x>
+     <y>60</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>88</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>余额明细</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="edt_huobi_balance">
+   <property name="geometry">
+    <rect>
+     <x>1250</x>
+     <y>20</y>
+     <width>114</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_55">
+   <property name="geometry">
+    <rect>
+     <x>1170</x>
+     <y>20</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>88</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>账户余额</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_56">
+   <property name="geometry">
+    <rect>
+     <x>1370</x>
+     <y>20</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>88</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>btc</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tabHuobiBalance">
+   <property name="geometry">
+    <rect>
+     <x>1170</x>
+     <y>90</y>
+     <width>311</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>币种</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>数量</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>当前价值</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QTableWidget" name="tabHuobHistory">
+   <property name="geometry">
+    <rect>
+     <x>1170</x>
+     <y>320</y>
+     <width>381</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>交易对</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>数量</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>当前价值</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>总价值</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QLabel" name="label_57">
+   <property name="geometry">
+    <rect>
+     <x>1170</x>
+     <y>300</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>88</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>余额明细</string>
+   </property>
+  </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
@@ -1939,7 +2122,7 @@
    <property name="geometry">
     <rect>
      <x>730</x>
-     <y>450</y>
+     <y>370</y>
      <width>411</width>
      <height>261</height>
     </rect>
@@ -2091,6 +2274,46 @@
         <string>交易对</string>
        </property>
       </column>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>40</y>
+     <width>384</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_39">
+    <item>
+     <widget class="QLabel" name="label_59">
+      <property name="text">
+       <string>使用</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="edt_huobi_simulate_balance">
+      <property name="text">
+       <string>0.01</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_60">
+      <property name="text">
+       <string>btc进行模拟交易</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btn_huobi_simulate">
+      <property name="text">
+       <string>确定</string>
+      </property>
      </widget>
     </item>
    </layout>

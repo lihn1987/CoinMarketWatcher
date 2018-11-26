@@ -69,6 +69,17 @@ void MainWidget::OnTimer(){
     }
   }
 
+  ui->edt_huobi_balance->setText(QString().sprintf("%f", huobi_market_.GetBalanceBtcAll()));
+  while(ui->tabHuobiBalance->rowCount()){
+    ui->tabHuobiBalance->removeRow(0);
+  }
+  for(auto item:huobi_market_.GetBalanceAll()){
+    ui->tabHuobiBalance->insertRow(0);
+    ui->tabHuobiBalance->setItem(0,0, new QTableWidgetItem(item.first.c_str()));
+    ui->tabHuobiBalance->setItem(0,1, new QTableWidgetItem(QString::number(item.second)));
+    //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
+  }
+
 }
 
 void MainWidget::on_btnHuobiTransactionStart_clicked(){
@@ -184,7 +195,7 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
     }
     param_list.push_back(ui->edt_param_depth_3_2->text().toStdString());
     QuantitativeTransactionItem quan_item;
-    quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+    quan_item.Init(QuantitativeComputeType::QC_DepthBuyCount, param_list);
     huobi_market_.buy_quan_list_.push_back(quan_item);
   }
 
@@ -209,4 +220,8 @@ void MainWidget::on_btn_apply_config_clicked(){
   proxy.setHostName(ui->edt_proxy_ip->text());
   proxy.setPort(ui->edt_proxy_port->text().toInt());
   QNetworkProxy::setApplicationProxy(proxy);
+}
+
+void MainWidget::on_btn_huobi_simulate_clicked(){
+  huobi_market_.SetBalance("btc",ui->edt_huobi_simulate_balance->text().toDouble());
 }
