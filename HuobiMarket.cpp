@@ -52,7 +52,7 @@ void HuobiMarket::SubScribeMarketDepth(){
   }
 }
 
-void HuobiMarket::Compute(const std::string &coin_symbol){
+bool HuobiMarket::Compute(const std::string &coin_symbol){
   bool pass = true;
   for(size_t i = 0; i < buy_quan_list_.size(); i++){
     if(pass == false){
@@ -61,6 +61,7 @@ void HuobiMarket::Compute(const std::string &coin_symbol){
       pass = false;
     }
   }
+  return pass;
 }
 
 void HuobiMarket::Disconnect(){
@@ -140,7 +141,11 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
           }
         }
         info_.depth_info_[str_ch].delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
-        Compute(str_ch);
+        if(Compute(str_ch)){
+          if(balance_["btc"] >= 0.001){
+            Buy(str_ch, 0.001);
+          }
+        }
         SubScribeMarketDepth();
         //std::string str_ch = pt.get<std::string>("ch");
       }else{//处理交易信息
@@ -238,6 +243,10 @@ DelayState HuobiMarket::GetDelayState(){
   return delay_state_;
 }
 
+std::list<TradeHistoryItem> HuobiMarket::GetTradeHistory(){
+  return trade_history_;
+}
+
 void HuobiMarket::SetSimulate(bool is_simulate){
   is_simulate_ = is_simulate;
 }
@@ -249,7 +258,7 @@ double HuobiMarket::GetBalanceBtcAll(){
     if(item.first == "btc"){
       rtn += item.second;
     }else if(item.second != 0){
-      std::string symbol = (boost::format("%1btc")%item.first).str();
+      std::string symbol = (item.first+"btc");
       if(info_.trade_list_.find(symbol) != info_.trade_list_.end()){
         rtn += QString::fromStdString(info_.trade_list_[symbol].back().price_).toDouble()*item.second;
       }
@@ -274,23 +283,37 @@ void HuobiMarket::SetBalance(const std::string &symbol, double amount){
   balance_[symbol] = amount;
 }
 
+void HuobiMarket::ClearBalance(){
+  balance_.clear();
+}
+
 void HuobiMarket::Buy(const std::string &symbol, double count){
   if(is_simulate_){//模拟买入
     int idx = symbol.find_last_of("btc");
     if(idx != -1){
-      std::string arm_coin_symbol = std::string(symbol.c_str(), idx);
+      std::string arm_coin_symbol = std::string(symbol.c_str(), idx-3+1);
+      if(balance_[arm_coin_symbol]*atof(info_.trade_list_[symbol].back().price_.c_str()) > 0.0005){
+        //已经有了，不再买了
+        return;
+      }
       if(balance_.find(arm_coin_symbol) == balance_.end()){
         balance_[arm_coin_symbol] = 0;
       }
       double receive_count = count;
       for(std::pair<std::string/*价格*/, std::string/*数量*/> item:info_.depth_info_[symbol].asks_){
         if(atof(item.first.c_str())*atof(item.second.c_str()) <= receive_count){
-          receive_count -= atof(item.second.c_str())*atof(item.second.c_str());
+          receive_count -= atof(item.first.c_str())*atof(item.second.c_str());
           balance_[arm_coin_symbol]+=atof(item.second.c_str());
         }else{
           balance_[arm_coin_symbol]+=receive_count/atof(item.first.c_str());
+          break;
         }
       }
+      TradeHistoryItem item;
+      item.coin_ = symbol;
+      item.count_ =balance_[arm_coin_symbol];
+      item.price_ = count/balance_[arm_coin_symbol];
+      trade_history_.push_back(item);
       balance_["btc"] -= count;
     }
   }

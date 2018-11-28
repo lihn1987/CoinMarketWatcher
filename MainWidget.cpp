@@ -80,6 +80,19 @@ void MainWidget::OnTimer(){
     //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
   }
 
+  ui->edt_huobi_balance->setText(QString().sprintf("%f", huobi_market_.GetBalanceBtcAll()));
+  while(ui->tabHuobHistory->rowCount()){
+    ui->tabHuobHistory->removeRow(0);
+  }
+  for(auto item:huobi_market_.GetTradeHistory()){
+    ui->tabHuobHistory->insertRow(0);
+    ui->tabHuobHistory->setItem(0,0, new QTableWidgetItem(item.coin_.c_str()));
+    ui->tabHuobHistory->setItem(0,1, new QTableWidgetItem(QString::number(item.count_)));
+    ui->tabHuobHistory->setItem(0,2, new QTableWidgetItem(QString::number(item.price_)));
+    ui->tabHuobHistory->setItem(0,3, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[item.coin_].back().price_.c_str()));
+    //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
+  }
+
 }
 
 void MainWidget::on_btnHuobiTransactionStart_clicked(){
@@ -223,5 +236,7 @@ void MainWidget::on_btn_apply_config_clicked(){
 }
 
 void MainWidget::on_btn_huobi_simulate_clicked(){
+  huobi_market_.SetSimulate(true);
+  huobi_market_.ClearBalance();
   huobi_market_.SetBalance("btc",ui->edt_huobi_simulate_balance->text().toDouble());
 }
