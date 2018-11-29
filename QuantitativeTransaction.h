@@ -33,6 +33,7 @@ private:
 public:
   void Init(QuantitativeComputeType type, std::vector<std::string>& param_list);
   std::set<std::string> GetCoinsymbolSet();
+  void SetCoinSymbolSet(const std::set<std::string>& symbol_set);
   QuantitativeComputeType GetComputeType();
   void Removesymbol(const std::string& symbol);
   bool Compute(const std::string &coin_symbol, CoinInfo& info);

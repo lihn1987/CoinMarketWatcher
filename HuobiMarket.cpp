@@ -52,9 +52,31 @@ void HuobiMarket::SubScribeMarketDepth(){
   }
 }
 
-bool HuobiMarket::Compute(const std::string &coin_symbol){
-  bool pass = true;
+bool HuobiMarket::ComputeBuy(const std::string &coin_symbol){
+  bool pass = buy_quan_list_.size()?true:false;
   for(size_t i = 0; i < buy_quan_list_.size(); i++){
+    if(pass == false){
+      buy_quan_list_[i].Removesymbol(coin_symbol);
+    }else if(!buy_quan_list_[i].Compute(coin_symbol, info_)){
+      pass = false;
+    }
+  }
+  return pass;
+}
+
+bool HuobiMarket::ComputeSell(const std::string &coin_symbol){
+  std::set<std::string> symbol_set;
+  for(std::pair<std::string/*symbol*/, double/*amount*/> item: balance_){
+    if(item.first == "btc")continue;
+    if(item.second*atoi(info_.trade_list_[item.first+"btc"].back().price_.c_str())>0.001){
+      symbol_set.insert(item.first);
+    }
+  }
+  bool pass = true;
+  if(sell_quan_list_.size()){
+    sell_quan_list_[0].SetCoinSymbolSet(symbol_set);
+  }
+  for(size_t i = 0; i < sell_quan_list_.size(); i++){
     if(pass == false){
       buy_quan_list_[i].Removesymbol(coin_symbol);
     }else if(!buy_quan_list_[i].Compute(coin_symbol, info_)){
@@ -141,10 +163,13 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
           }
         }
         info_.depth_info_[str_ch].delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
-        if(Compute(str_ch)){
+        if(ComputeBuy(str_ch)){
           if(balance_["btc"] >= 0.001){
             Buy(str_ch, 0.001);
           }
+        }
+        if(ComputeSell(str_ch)){
+
         }
         SubScribeMarketDepth();
         //std::string str_ch = pt.get<std::string>("ch");
@@ -250,12 +275,15 @@ std::list<TradeHistoryItem> HuobiMarket::GetTradeHistory(){
   return trade_history_;
 }
 
+void HuobiMarket::ClearTradeHistory(){
+  trade_history_.clear();
+}
+
 void HuobiMarket::SetSimulate(bool is_simulate){
   is_simulate_ = is_simulate;
 }
 
 double HuobiMarket::GetBalanceBtcAll(){
-  //info_.trade_list_[]
   double rtn = 0;
   for(std::pair<std::string/*symbol*/, double/*amount*/>item: balance_){
     if(item.first == "btc"){

@@ -10,6 +10,10 @@ std::set<std::string> QuantitativeTransactionItem::GetCoinsymbolSet(){
   return coin_symbol_;
 }
 
+void QuantitativeTransactionItem::SetCoinSymbolSet(const std::set<std::string> &symbol_set){
+  coin_symbol_ = symbol_set;
+}
+
 QuantitativeComputeType QuantitativeTransactionItem::GetComputeType(){
   return compute_type_;
 }
@@ -295,5 +299,27 @@ bool QuantitativeTransactionItem::ComputeBuyCount(const std::string &coin_symbol
 
 bool QuantitativeTransactionItem::ComputeSellCount(const std::string &coin_symbol, CoinInfo &info)
 {
-return false;
+  //参数描述 0:相对于卖盘买盘的差价百分比   买完需要的比特币个数 1:>(1) <(2)  2:value
+  if(param_list_.size() < 3){
+    coin_symbol_.erase(coin_symbol);
+    return false;
+  }
+  double min_price = QString::fromStdString(info.depth_info_[coin_symbol].asks_.front().first).toDouble()*(1-QString::fromStdString(param_list_[0].c_str()).toDouble()/100.0f);
+  double btc_arm_count = atof(param_list_[2].c_str());
+  double btc_real_count = 0;
+  for(std::pair<std::string/*价格*/, std::string/*数量*/> item:info.depth_info_[coin_symbol].bids_){
+    if(QString::fromStdString(item.first).toDouble() >= min_price){
+      btc_real_count+=QString::fromStdString(item.second).toLower().toDouble()*QString::fromStdString(item.first).toDouble();
+      //qDebug()<<QString::fromStdString(item.second).toLower().toDouble();
+    }
+  }
+  if(param_list_[1] == "1" && btc_real_count > btc_arm_count){
+    coin_symbol_.insert(coin_symbol);
+    return true;
+  }else if(param_list_[1] == "2" && btc_arm_count < btc_real_count){
+    coin_symbol_.insert(coin_symbol);
+    return true;
+  }
+  coin_symbol_.erase(coin_symbol);
+  return false;
 }

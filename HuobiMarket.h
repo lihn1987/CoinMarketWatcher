@@ -32,7 +32,8 @@ private:
   void LoadTradePair();
   void SubScribeTradeDetail();
   void SubScribeMarketDepth();
-  bool Compute(const std::string& coin_symbol);
+  bool ComputeBuy(const std::string& coin_symbol);
+  bool ComputeSell(const std::string& coin_symbol);
   void Disconnect();
 public slots:
   void OnConnected();
@@ -41,6 +42,7 @@ public slots:
   void OnLoadTradePair();
 public:
   std::vector<QuantitativeTransactionItem> buy_quan_list_;
+  std::vector<QuantitativeTransactionItem> sell_quan_list_;
 public:
   void StartWatch();
   std::list<std::pair<std::string, std::string>> GetMarketPair();
@@ -48,7 +50,7 @@ public:
   DelayState GetDelayState();
   std::list<std::pair<std::string/*base*/, std::string/*quote*/>> GetTradePairList();
   std::list<TradeHistoryItem> GetTradeHistory();
-
+  void ClearTradeHistory();
 public://账户相关
   void SetSimulate(bool is_simulate);
   double GetBalanceBtcAll();
