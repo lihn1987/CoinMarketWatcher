@@ -74,7 +74,7 @@ void HuobiMarket::OnConnected(){
   SubScribeTradeDetail();
   SubScribeMarketDepth();
   SubScribeMarketDepth();
-  //SubScribeMarketDepth();
+  SubScribeMarketDepth();
   SubScribeMarketDepth();
   SubScribeMarketDepth();
   //depth_timer_.start(100);
@@ -170,6 +170,9 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
               trade_item.direction_ = value_item.second.get<std::string>("direction");
               trade_item.ts_ = value_item.second.get<std::string>("ts");
               info_.trade_list_[str_ch].push_back(trade_item);
+              if(info_.trade_list_[str_ch].size() > 2000){
+                info_.trade_list_[str_ch].pop_front();
+              }
               qDebug()<<"处理tradedetail信息成功";
               qDebug()<<trade_item.ToQString();
             }
