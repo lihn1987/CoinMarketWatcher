@@ -68,19 +68,20 @@ bool HuobiMarket::ComputeSell(const std::string &coin_symbol){
   std::set<std::string> symbol_set;
   for(std::pair<std::string/*symbol*/, double/*amount*/> item: balance_){
     if(item.first == "btc")continue;
-    if(item.second*atoi(info_.trade_list_[item.first+"btc"].back().price_.c_str())>0.001){
-      symbol_set.insert(item.first);
+    if(item.second*atof(info_.trade_list_[item.first+"btc"].back().price_.c_str())>0.0001){
+      symbol_set.insert(item.first+"btc");
     }
   }
-  bool pass = true;
-  if(sell_quan_list_.size()){
-    sell_quan_list_[0].SetCoinSymbolSet(symbol_set);
-  }
+  //防止没有卖出时执行卖出
+  bool pass = sell_quan_list_.size()?true:false;
   for(size_t i = 0; i < sell_quan_list_.size(); i++){
     if(pass == false){
-      buy_quan_list_[i].Removesymbol(coin_symbol);
-    }else if(!buy_quan_list_[i].Compute(coin_symbol, info_)){
+      sell_quan_list_[i].Removesymbol(coin_symbol);
+    }else if(symbol_set.find(coin_symbol) == symbol_set.end()||!sell_quan_list_[i].Compute(coin_symbol, info_)){
       pass = false;
+    }else {
+      int fordebug = 1;
+      fordebug=0;
     }
   }
   return pass;
@@ -169,7 +170,11 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
           }
         }
         if(ComputeSell(str_ch)){
-
+          int idx = str_ch.find_last_of("btc");
+          if(idx != -1){
+            std::string arm_coin_symbol = std::string(str_ch.c_str(), idx-3+1);
+            Sell(str_ch, balance_[arm_coin_symbol]);
+          }
         }
         SubScribeMarketDepth();
         //std::string str_ch = pt.get<std::string>("ch");
@@ -340,16 +345,93 @@ void HuobiMarket::Buy(const std::string &symbol, double count){
           break;
         }
       }
+      //扣税。。。。。。
+      balance_[arm_coin_symbol]*= 0.998;
       TradeHistoryItem item;
       item.coin_ = symbol;
       item.count_ =balance_[arm_coin_symbol];
       item.price_ = count/balance_[arm_coin_symbol];
+      item.buy_ = true;
       trade_history_.push_back(item);
       balance_["btc"] -= count;
     }
   }
+  Log();
 }
 
-void HuobiMarket::Sell(const std::string &symble, double count){
+void HuobiMarket::Sell(const std::string &symbol, double count){
+  if(is_simulate_){//模拟买入
+    int idx = symbol.find_last_of("btc");
+    if(idx != -1){
+      std::string arm_coin_symbol = std::string(symbol.c_str(), idx-3+1);
+      if(balance_[arm_coin_symbol]*atof(info_.trade_list_[symbol].back().price_.c_str()) < 0.0005){
+        //没有，不能卖
+        return;
+      }
+      if(balance_.find(arm_coin_symbol) == balance_.end()){
+        balance_[arm_coin_symbol] = 0;
+      }
+      //交税
+      double receive_count = count*= 0.998;
+      double btc_all = 0;
+      for(std::pair<std::string/*价格*/, std::string/*数量*/> item:info_.depth_info_[symbol].bids_){
+        if(atof(item.second.c_str()) <= receive_count){
+          receive_count -= atof(item.second.c_str());
+          balance_["btc"]+=atof(item.second.c_str())*atof(item.first.c_str());
+          btc_all+=atof(item.second.c_str())*atof(item.first.c_str());
+        }else{
+          balance_["btc"]+=receive_count*atof(item.first.c_str());
+          btc_all+=receive_count*atof(item.first.c_str());
+          break;
+        }
+      }
+      balance_[arm_coin_symbol] = 0;
+      balance_.erase(arm_coin_symbol);
+      TradeHistoryItem item;
+      item.coin_ = symbol;
+      item.count_ =count;
+      item.price_ = btc_all/count;
+      item.buy_ = false;
+      item.time_ = QDateTime::currentDateTime().toString("YYYY:MM:dd-hh-mm-ss").toStdString();
+      trade_history_.push_back(item);
+      //balance_["btc"] -= count;
+    }
+  }
+  Log();
+}
+#include <QDateTime>
+void HuobiMarket::Log(){
 
+  QString log = "echo -e \"";
+  QDateTime time = QDateTime::currentDateTime();
+  log += time.toString("YYYY:MM:dd-hh-mm-ss");
+  log += "\r\n";
+  log += "当前资产\r\n";
+  for(std::pair<std::string, double>item:balance_){
+    log+=item.first.c_str();
+    log+=":";
+    log+=QString::number(item.second);
+    log+="\r\n";
+  }
+  log += "交易明细\r\n";
+  for(TradeHistoryItem item:trade_history_){
+    log+= item.time_.c_str();
+    log+= "~~~~";
+    log+= item.buy_?"买":"卖";
+    log+= "~~~~";
+    log+= item.coin_.c_str();
+    log+= "~~~~";
+    log+= QString::number(item.price_);
+    log+= "~~~~";
+    log+= QString::number(item.count_);
+    log+= "\r\n\"";
+  }
+  static int idx=0;
+  idx++;
+  if(idx%2){
+    log += " > a.txt";
+  }else{
+    log += " > b.txt";
+  }
+  system(log.toStdString().c_str());
 }

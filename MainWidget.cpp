@@ -83,8 +83,8 @@ void MainWidget::OnTimer(){
     huobi_market_.sell_quan_list_[i].GetComputeType() != QuantitativeComputeType::QC_DepthBuyCount &&
        huobi_market_.sell_quan_list_[i].GetComputeType() != QuantitativeComputeType::QC_DepthSellCount){
       for(const std::string& item:huobi_market_.sell_quan_list_[i].GetCoinsymbolSet()){
-        buy_quan_list[i]->insertRow(0);
-        buy_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
+        sell_quan_list[i]->insertRow(0);
+        sell_quan_list[i]->setItem(0, 0, new QTableWidgetItem(item.c_str()));
       }
     }
   }
@@ -123,9 +123,10 @@ void MainWidget::OnTimer(){
   for(auto item:huobi_market_.GetTradeHistory()){
     ui->tabHuobHistory->insertRow(0);
     ui->tabHuobHistory->setItem(0,0, new QTableWidgetItem(item.coin_.c_str()));
-    ui->tabHuobHistory->setItem(0,1, new QTableWidgetItem(QString::number(item.count_)));
-    ui->tabHuobHistory->setItem(0,2, new QTableWidgetItem(QString::number(item.price_)));
-    ui->tabHuobHistory->setItem(0,3, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[item.coin_].back().price_.c_str()));
+    ui->tabHuobHistory->setItem(0,1, new QTableWidgetItem(item.buy_?"买":"卖"));
+    ui->tabHuobHistory->setItem(0,2, new QTableWidgetItem(QString::number(item.count_)));
+    ui->tabHuobHistory->setItem(0,3, new QTableWidgetItem(QString::number(item.price_)));
+    ui->tabHuobHistory->setItem(0,4, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[item.coin_].back().price_.c_str()));
     //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
   }
 
@@ -260,7 +261,7 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
       }
       param_list.push_back(ui->edt_param_depth_3_3->text().toStdString());
       QuantitativeTransactionItem quan_item;
-      quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+      quan_item.Init(QuantitativeComputeType::QC_DepthSellCount, param_list);
       huobi_market_.buy_quan_list_.push_back(quan_item);
     }
   }
@@ -343,7 +344,7 @@ void MainWidget::on_btn_buyQuantitative_1_clicked(){
       }
       param_list.push_back(ui->edt_param_depth_3_5->text().toStdString());
       QuantitativeTransactionItem quan_item;
-      quan_item.Init(QuantitativeComputeType::QC_DepthBuySellMargin, param_list);
+      quan_item.Init(QuantitativeComputeType::QC_DepthSellCount, param_list);
       huobi_market_.sell_quan_list_.push_back(quan_item);
     }
   }

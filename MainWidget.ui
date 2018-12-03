@@ -429,12 +429,17 @@
    </column>
    <column>
     <property name="text">
+     <string>买卖</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
      <string>数量</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>买入时价格</string>
+     <string>交易时价格</string>
     </property>
    </column>
    <column>
@@ -823,7 +828,7 @@
                        <string/>
                       </property>
                       <property name="checked">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -996,7 +1001,7 @@
                        <string/>
                       </property>
                       <property name="checked">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -1168,7 +1173,7 @@
                        <string/>
                       </property>
                       <property name="checked">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -1330,7 +1335,7 @@
                        <string/>
                       </property>
                       <property name="checked">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -2560,7 +2565,7 @@
                        <string/>
                       </property>
                       <property name="checked">
-                       <bool>false</bool>
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>
@@ -4172,6 +4177,9 @@
                  </item>
                  <item>
                   <widget class="QComboBox" name="cb_param_depth_1_2">
+                   <property name="currentIndex">
+                    <number>1</number>
+                   </property>
                    <item>
                     <property name="text">
                      <string>&gt;</string>
@@ -4208,7 +4216,7 @@
                     <string/>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -4263,6 +4271,9 @@
                    <property name="text">
                     <string/>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -4273,7 +4284,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="edt_param_depth_1_5"/>
+                  <widget class="QLineEdit" name="edt_param_depth_1_5">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_145">
@@ -4297,7 +4312,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="edt_param_depth_3_5"/>
+                  <widget class="QLineEdit" name="edt_param_depth_3_5">
+                   <property name="text">
+                    <string>0.01</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>

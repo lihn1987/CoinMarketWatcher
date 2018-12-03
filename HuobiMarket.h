@@ -12,6 +12,8 @@ struct TradeHistoryItem{
   std::string coin_;
   double count_;
   double price_;
+  bool buy_;
+  std::string time_;
 };
 class HuobiMarket : public MarketInterface
 {
@@ -60,6 +62,7 @@ public://账户相关
   void ClearBalance();
   void Buy(const std::string& symbol, double count);
   void Sell(const std::string& symble, double count);
+  void Log();
 private:
   std::map<std::string/*symbol*/, double/*amount*/> balance_;
   std::list<TradeHistoryItem> trade_history_;
