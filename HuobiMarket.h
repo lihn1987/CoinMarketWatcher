@@ -8,13 +8,7 @@
 #include <QNetworkReply>
 #include <QTimer>
 #include "QuantitativeTransaction.h"
-struct TradeHistoryItem{
-  std::string coin_;
-  double count_;
-  double price_;
-  bool buy_;
-  std::string time_;
-};
+
 class HuobiMarket : public MarketInterface
 {
   Q_OBJECT
@@ -65,7 +59,7 @@ public://账户相关
   void Log();
 private:
   std::map<std::string/*symbol*/, double/*amount*/> balance_;
-  std::list<TradeHistoryItem> trade_history_;
+  ;
   bool is_simulate_;
 
 };

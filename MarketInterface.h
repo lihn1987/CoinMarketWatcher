@@ -99,10 +99,19 @@ struct TradeItem{
   }
 };
 
+struct TradeHistoryItem{
+  std::string coin_;
+  double count_;
+  double price_;
+  bool buy_;
+  std::string time_;
+};
+
 class CoinInfo{
 public:
   std::map<std::string/*symbol*/, DepthInfo> depth_info_;
   std::map<std::string/*symbol*/, std::list<TradeItem>> trade_list_;
+  std::list<TradeHistoryItem> trade_history_;
 };
 
 class MarketInterface : public QObject

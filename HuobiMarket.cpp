@@ -277,11 +277,11 @@ DelayState HuobiMarket::GetDelayState(){
 }
 
 std::list<TradeHistoryItem> HuobiMarket::GetTradeHistory(){
-  return trade_history_;
+  return info_.trade_history_;
 }
 
 void HuobiMarket::ClearTradeHistory(){
-  trade_history_.clear();
+  info_.trade_history_.clear();
 }
 
 void HuobiMarket::SetSimulate(bool is_simulate){
@@ -352,7 +352,7 @@ void HuobiMarket::Buy(const std::string &symbol, double count){
       item.count_ =balance_[arm_coin_symbol];
       item.price_ = count/balance_[arm_coin_symbol];
       item.buy_ = true;
-      trade_history_.push_back(item);
+      info_.trade_history_.push_back(item);
       balance_["btc"] -= count;
     }
   }
@@ -393,16 +393,26 @@ void HuobiMarket::Sell(const std::string &symbol, double count){
       item.price_ = btc_all/count;
       item.buy_ = false;
       item.time_ = QDateTime::currentDateTime().toString("YYYY:MM:dd-hh-mm-ss").toStdString();
-      trade_history_.push_back(item);
+      info_.trade_history_.push_back(item);
       //balance_["btc"] -= count;
     }
   }
   Log();
 }
 #include <QDateTime>
+#include <QFile>
 void HuobiMarket::Log(){
+  QFile file;
+  static int idx=0;
+  idx++;
+  if(idx%2){
+    file.setFileName("./a.txt");
+  }else{
+    file.setFileName("./b.txt");
+  }
+  file.open(QFile::ReadWrite);
 
-  QString log = "echo -e \"";
+  QString log;
   QDateTime time = QDateTime::currentDateTime();
   log += time.toString("YYYY:MM:dd-hh-mm-ss");
   log += "\r\n";
@@ -414,7 +424,7 @@ void HuobiMarket::Log(){
     log+="\r\n";
   }
   log += "交易明细\r\n";
-  for(TradeHistoryItem item:trade_history_){
+  for(TradeHistoryItem item:info_.trade_history_){
     log+= item.time_.c_str();
     log+= "~~~~";
     log+= item.buy_?"买":"卖";
@@ -426,12 +436,7 @@ void HuobiMarket::Log(){
     log+= QString::number(item.count_);
     log+= "\r\n\"";
   }
-  static int idx=0;
-  idx++;
-  if(idx%2){
-    log += " > a.txt";
-  }else{
-    log += " > b.txt";
-  }
-  system(log.toStdString().c_str());
+
+  file.write(log.toLocal8Bit());
+  file.close();
 }

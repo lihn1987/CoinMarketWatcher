@@ -45,6 +45,8 @@ bool QuantitativeTransactionItem::Compute(const std::string &coin_symbol, CoinIn
     case QuantitativeComputeType::QC_DepthSellCount:
       return ComputeSellCount(coin_symbol, info);
       break;
+    case QuantitativeComputeType::QC_PROFIT_AND_LOSS:
+      return ComputeProfitAndLoss(coin_symbol, info);
     default:
       return false;
   }
@@ -322,4 +324,25 @@ bool QuantitativeTransactionItem::ComputeSellCount(const std::string &coin_symbo
   }
   coin_symbol_.erase(coin_symbol);
   return false;
+}
+
+bool QuantitativeTransactionItem::ComputeProfitAndLoss(const std::string &coin_symbol, CoinInfo &info){
+  //参数描述 0:利润大于 1亏损小于
+  if(param_list_.size() < 2)return false;
+  double base_price = 0;
+  double now_price = atof(info.trade_list_[coin_symbol].back().price_.c_str());
+  for(auto iter = info.trade_history_.rbegin(); iter != info.trade_history_.rend(); iter++){
+    if(iter->coin_==coin_symbol && iter->buy_ == true){
+      base_price = iter->price_;
+      break;
+    }
+  }
+  if(base_price == 0)return false;
+
+  if(now_price > base_price && (now_price - base_price)/base_price*100 > atof(param_list_[0].c_str())){
+    return true;
+  }
+  else if(now_price < base_price && (base_price - now_price)/base_price*100 > atof(param_list_[1].c_str())){
+    return true;
+  }
 }

@@ -20,8 +20,10 @@ enum QuantitativeComputeType{
   QC_DepthBuySellMargin = 4,//买卖价格差
   //参数描述 0:相对于卖盘买盘的差价百分比   买完需要的比特币个数 1:>(1) <(2)  2:value
   QC_DepthBuyCount = 5,//
-  //参数描述  1:相对于买盘相对于卖盘的差价百分比能卖出的比特币个数 1:>(1) <(2)  2:value
+  //参数描述  0:相对于买盘相对于卖盘的差价百分比能卖出的比特币个数 1:>(1) <(2)  2:value
   QC_DepthSellCount = 6,
+  //参数描述 0:利润大于 1亏损小于
+  QC_PROFIT_AND_LOSS=7
 };
 
 class QuantitativeTransactionItem{
@@ -44,6 +46,7 @@ public:
   bool ComputeBuySellMargin(const std::string &coin_symbol, CoinInfo& info);
   bool ComputeBuyCount(const std::string &coin_symbol, CoinInfo& info);
   bool ComputeSellCount(const std::string &coin_symbol, CoinInfo& info);
+  bool ComputeProfitAndLoss(const std::string &coin_symbol, CoinInfo& info);
 
 };
 #endif // QUANTITATIVETRANSACTION_H
