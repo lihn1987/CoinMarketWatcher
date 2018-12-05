@@ -165,8 +165,8 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
         }
         info_.depth_info_[str_ch].delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()));
         if(ComputeBuy(str_ch)){
-          if(balance_["btc"] >= 0.001){
-            Buy(str_ch, 0.001);
+          if(balance_["btc"] >= 0.01){
+            Buy(str_ch, 0.01);
           }
         }
         if(ComputeSell(str_ch)){
@@ -352,6 +352,7 @@ void HuobiMarket::Buy(const std::string &symbol, double count){
       item.count_ =balance_[arm_coin_symbol];
       item.price_ = count/balance_[arm_coin_symbol];
       item.buy_ = true;
+      item.time_ = QDateTime::currentDateTime().toString("yyyy:MM:dd-hh-mm-ss").toStdString();
       info_.trade_history_.push_back(item);
       balance_["btc"] -= count;
     }
@@ -392,9 +393,8 @@ void HuobiMarket::Sell(const std::string &symbol, double count){
       item.count_ =count;
       item.price_ = btc_all/count;
       item.buy_ = false;
-      item.time_ = QDateTime::currentDateTime().toString("YYYY:MM:dd-hh-mm-ss").toStdString();
+      item.time_ = QDateTime::currentDateTime().toString("yyyy:MM:dd-hh-mm-ss").toStdString();
       info_.trade_history_.push_back(item);
-      //balance_["btc"] -= count;
     }
   }
   Log();
@@ -405,6 +405,7 @@ void HuobiMarket::Log(){
   QFile file;
   static int idx=0;
   idx++;
+  //双文件的目的主要是为了保证一定能存下来一个
   if(idx%2){
     file.setFileName("./a.txt");
   }else{
@@ -414,7 +415,7 @@ void HuobiMarket::Log(){
 
   QString log;
   QDateTime time = QDateTime::currentDateTime();
-  log += time.toString("YYYY:MM:dd-hh-mm-ss");
+  log += time.toString("yyyy:MM:dd-hh-mm-ss");
   log += "\r\n";
   log += "当前资产\r\n";
   for(std::pair<std::string, double>item:balance_){
@@ -426,13 +427,13 @@ void HuobiMarket::Log(){
   log += "交易明细\r\n";
   for(TradeHistoryItem item:info_.trade_history_){
     log+= item.time_.c_str();
-    log+= "~~~~";
+    log+= "\t";
     log+= item.buy_?"买":"卖";
-    log+= "~~~~";
+    log+= "\t";
     log+= item.coin_.c_str();
-    log+= "~~~~";
+    log+= "\t";
     log+= QString::number(item.price_);
-    log+= "~~~~";
+    log+= "\t";
     log+= QString::number(item.count_);
     log+= "\r\n\"";
   }
