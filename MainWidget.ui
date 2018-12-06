@@ -391,7 +391,7 @@
    </column>
    <column>
     <property name="text">
-     <string>当前价值</string>
+     <string>当前利润</string>
     </property>
    </column>
   </widget>

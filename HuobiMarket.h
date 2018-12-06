@@ -7,6 +7,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QTimer>
+#include <QSqlDatabase>
 #include "QuantitativeTransaction.h"
 
 class HuobiMarket : public MarketInterface
@@ -23,6 +24,7 @@ private:
   QNetworkAccessManager network_manager_;
   DelayState delay_state_;
   uint32_t depth_idx_ = 0;//depth请求索引
+  QSqlDatabase db_;
 private:
   void InitMarket();
   void LoadTradePair();

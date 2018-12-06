@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network websockets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network websockets sql
 
 TARGET = CoinTool
 TEMPLATE = app

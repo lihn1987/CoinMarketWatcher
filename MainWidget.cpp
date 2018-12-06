@@ -114,6 +114,19 @@ void MainWidget::OnTimer(){
     ui->tabHuobiBalance->setItem(0,0, new QTableWidgetItem(item.first.c_str()));
     ui->tabHuobiBalance->setItem(0,1, new QTableWidgetItem(QString::number(item.second)));
     //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
+    if(item.first != "btc"){
+      std::string symbol = item.first+"btc";
+      double price_buy = 0;
+      for(TradeHistoryItem item:huobi_market_.GetCoinInfo().trade_history_){
+        if(item.coin_ == symbol){
+          price_buy = item.price_;
+          break;
+        }
+      }
+      TradeItem trade_item = huobi_market_.GetCoinInfo().trade_list_[symbol].back();
+      double price_now = atof(trade_item.price_.c_str());
+      ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number((price_now - price_buy)/price_now*100)+"%"));
+    }
   }
 
   ui->edt_huobi_balance->setText(QString().sprintf("%f", huobi_market_.GetBalanceBtcAll()));

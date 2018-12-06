@@ -6,6 +6,7 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <QSqlQuery>
 
 HuobiMarket::HuobiMarket(){
   InitMarket();
@@ -15,7 +16,17 @@ HuobiMarket::HuobiMarket(){
 }
 
 void HuobiMarket::InitMarket(){
-
+  db_ = QSqlDatabase::addDatabase("QMYSQL");
+  db_.setHostName("localhost");
+  db_.setPort(3306);
+  db_.setDatabaseName("coin");
+  db_.setUserName("user1");
+  db_.setPassword("123");
+  if(db_.open()){
+    qDebug()<<"db success";
+  }else{
+    qDebug()<<"db faild";
+  }
 }
 
 void HuobiMarket::LoadTradePair(){
@@ -79,9 +90,6 @@ bool HuobiMarket::ComputeSell(const std::string &coin_symbol){
       sell_quan_list_[i].Removesymbol(coin_symbol);
     }else if(symbol_set.find(coin_symbol) == symbol_set.end()||!sell_quan_list_[i].Compute(coin_symbol, info_)){
       pass = false;
-    }else {
-      int fordebug = 1;
-      fordebug=0;
     }
   }
   return pass;
@@ -116,6 +124,13 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
     fos.push(boost::iostreams::back_inserter(str_unzip));
     fos << message.toStdString();
     fos << std::flush;
+  }
+  {//将数据写入数据库
+    QSqlQuery query(db_);
+    QString str_sql = "insert into history(`msg`) values('%1')";
+    str_sql = str_sql.arg(str_unzip.data());
+    std::cout<<str_sql.toStdString()<<std::endl;
+    query.exec(str_sql);
   }
   qDebug()<<"getmessage:"<<str_unzip.data();
   boost::property_tree::ptree pt;
