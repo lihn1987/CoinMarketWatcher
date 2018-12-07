@@ -581,7 +581,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="dds">
     <attribute name="title">
@@ -758,7 +758,7 @@
                         <item>
                          <widget class="QLineEdit" name="edt_Param_41_1">
                           <property name="text">
-                           <string>0.3</string>
+                           <string>0.5</string>
                           </property>
                          </widget>
                         </item>
@@ -859,7 +859,7 @@
                            </size>
                           </property>
                           <property name="currentIndex">
-                           <number>1</number>
+                           <number>0</number>
                           </property>
                           <item>
                            <property name="text">
@@ -940,7 +940,7 @@
                         <item>
                          <widget class="QLineEdit" name="edt_Param_42_2">
                           <property name="text">
-                           <string>300</string>
+                           <string>600</string>
                           </property>
                          </widget>
                         </item>
@@ -954,7 +954,7 @@
                         <item>
                          <widget class="QLineEdit" name="edt_Param_5_2">
                           <property name="text">
-                           <string>300</string>
+                           <string>400</string>
                           </property>
                          </widget>
                         </item>
@@ -1103,7 +1103,7 @@
                         <item>
                          <widget class="QLineEdit" name="edt_Param_41_3">
                           <property name="text">
-                           <string>3</string>
+                           <string>4</string>
                           </property>
                          </widget>
                         </item>
