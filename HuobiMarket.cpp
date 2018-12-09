@@ -8,7 +8,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <QSqlQuery>
 
-HuobiMarket::HuobiMarket(){
+HuobiMarket::HuobiMarket():is_watching_(false){
   InitMarket();
   connect(&web_socket_,SIGNAL(connected()),this,SLOT(OnConnected()),Qt::AutoConnection);
   connect(&web_socket_,SIGNAL(disconnected()),this,SLOT(OnDisConnected()),Qt::AutoConnection);
@@ -112,8 +112,10 @@ void HuobiMarket::OnConnected(){
 }
 
 void HuobiMarket::OnDisConnected(){
-  qDebug()<<"Depth disconnected!";
-  StartWatch();
+  qDebug()<<"Websocket disconnected!";
+  if(is_watching_ == true){
+    StartWatch();
+  }
 }
 
 void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
@@ -276,7 +278,13 @@ void HuobiMarket::OnLoadTradePair(){
 }
 
 void HuobiMarket::StartWatch(){
+  is_watching_ = true;
   LoadTradePair();
+}
+
+void HuobiMarket::StopWatch(){
+  is_watching_ = false;
+  web_socket_.close();
 }
 
 std::list<std::pair<std::string, std::string> > HuobiMarket::GetMarketPair(){

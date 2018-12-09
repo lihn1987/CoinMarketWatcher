@@ -43,6 +43,7 @@ public:
   std::vector<QuantitativeTransactionItem> sell_quan_list_;
 public:
   void StartWatch();
+  void StopWatch();
   std::list<std::pair<std::string, std::string>> GetMarketPair();
   CoinInfo& GetCoinInfo();
   DelayState GetDelayState();
@@ -61,7 +62,7 @@ public://账户相关
   void Log();
 private:
   std::map<std::string/*symbol*/, double/*amount*/> balance_;
-  ;
+  bool is_watching_;
   bool is_simulate_;
 
 };

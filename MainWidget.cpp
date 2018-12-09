@@ -7,6 +7,10 @@ MainWidget::MainWidget(QWidget *parent) :
   ui->setupUi(this);
   connect(&timer_, SIGNAL(timeout()), this, SLOT(OnTimer()));
   timer_.start(500);
+
+
+  ui->btnHuobiTransactionStart->setVisible(true);
+  ui->btnHuobiTransactionStop->setVisible(false);
 }
 
 MainWidget::~MainWidget()
@@ -146,7 +150,15 @@ void MainWidget::OnTimer(){
 }
 
 void MainWidget::on_btnHuobiTransactionStart_clicked(){
+  ui->btnHuobiTransactionStart->setVisible(false);
+  ui->btnHuobiTransactionStop->setVisible(true);
   huobi_market_.StartWatch();
+}
+
+void MainWidget::on_btnHuobiTransactionStop_clicked(){
+  ui->btnHuobiTransactionStart->setVisible(true);
+  ui->btnHuobiTransactionStop->setVisible(false);
+  huobi_market_.StopWatch();
 }
 
 void MainWidget::InitMarketPair()
@@ -373,3 +385,4 @@ void MainWidget::on_btn_huobi_simulate_clicked(){
   huobi_market_.SetBalance("btc",ui->edt_huobi_simulate_balance->text().toDouble());
   huobi_market_.ClearTradeHistory();
 }
+
