@@ -345,4 +345,7 @@ bool QuantitativeTransactionItem::ComputeProfitAndLoss(const std::string &coin_s
   else if(now_price < base_price && (base_price - now_price)/base_price*100 > atof(param_list_[1].c_str())){
     return true;
   }
+  else{
+    return false;
+  }
 }

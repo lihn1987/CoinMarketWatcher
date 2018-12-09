@@ -146,7 +146,24 @@ void MainWidget::OnTimer(){
     ui->tabHuobHistory->setItem(0,4, new QTableWidgetItem(huobi_market_.GetCoinInfo().trade_list_[item.coin_].back().price_.c_str()));
     //ui->tabHuobiBalance->setItem(0,2, new QTableWidgetItem(QString::number(QString::fromStdString(item.first).toDouble()*item.second)));
   }
-
+  //计算平均价格涨跌与btcusdt价格涨跌
+  {
+    CoinInfo info = huobi_market_.GetCoinInfo();
+    int size = 0;
+    double count = 0;
+    for(const auto &item:info.start_price_map_){
+      size ++;
+      double price_now = atof(info.trade_list_[item.first].back().price_.c_str());
+      count += (price_now-item.second)/item.second;
+      if(item.first == "btcusdt"){
+        ui->edt_huobi_btc_updown->setText(QString::number((price_now-item.second)/item.second*100)+"%");
+      }
+    }
+    if(size){
+      QString avr = QString::number(count/size*100)+"%";
+      ui->edt_huobi_avr->setText(avr);
+    }
+  }
 }
 
 void MainWidget::on_btnHuobiTransactionStart_clicked(){

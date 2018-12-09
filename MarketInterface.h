@@ -111,6 +111,7 @@ class CoinInfo{
 public:
   std::map<std::string/*symbol*/, DepthInfo> depth_info_;
   std::map<std::string/*symbol*/, std::list<TradeItem>> trade_list_;
+  std::map<std::string/*symbol*/, double /*price*/> start_price_map_;
   std::list<TradeHistoryItem> trade_history_;
 };
 

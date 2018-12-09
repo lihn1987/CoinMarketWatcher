@@ -32,7 +32,7 @@
      <x>10</x>
      <y>90</y>
      <width>1137</width>
-     <height>241</height>
+     <height>247</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -60,6 +60,42 @@
           </property>
           <property name="format">
            <string>%v</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_41">
+        <item>
+         <widget class="QLabel" name="label_58">
+          <property name="text">
+           <string>btc涨跌:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_huobi_btc_updown">
+          <property name="text">
+           <string>0%</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_40">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>平均涨跌:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_huobi_avr">
+          <property name="text">
+           <string>0%</string>
           </property>
          </widget>
         </item>

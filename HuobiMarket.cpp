@@ -216,6 +216,9 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
               trade_item.amount_ = value_item.second.get<std::string>("amount");
               trade_item.direction_ = value_item.second.get<std::string>("direction");
               trade_item.ts_ = value_item.second.get<std::string>("ts");
+              if(info_.trade_list_[str_ch].size() == 0){
+                info_.start_price_map_[str_ch] = atof(trade_item.price_.c_str());
+              }
               info_.trade_list_[str_ch].push_back(trade_item);
               if(info_.trade_list_[str_ch].size() > 2000){
                 info_.trade_list_[str_ch].pop_front();
@@ -285,6 +288,9 @@ void HuobiMarket::StartWatch(){
 void HuobiMarket::StopWatch(){
   is_watching_ = false;
   web_socket_.close();
+  info_.depth_info_.clear();
+  info_.trade_list_.clear();
+  info_.start_price_map_.clear();
 }
 
 std::list<std::pair<std::string, std::string> > HuobiMarket::GetMarketPair(){
