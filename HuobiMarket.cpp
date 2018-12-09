@@ -127,13 +127,13 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
     fos << message.toStdString();
     fos << std::flush;
   }
-  /*{//将数据写入数据库
+  {//将数据写入数据库
     QSqlQuery query(db_);
     QString str_sql = "insert into history(`msg`) values('%1')";
     str_sql = str_sql.arg(str_unzip.data());
     std::cout<<str_sql.toStdString()<<std::endl;
     query.exec(str_sql);
-  }*/
+  }
   qDebug()<<"getmessage:"<<str_unzip.data();
   boost::property_tree::ptree pt;
   std::istringstream istm(str_unzip);
