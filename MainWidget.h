@@ -24,6 +24,8 @@ private slots:
   void on_btn_apply_config_clicked();
   void on_btn_huobi_simulate_clicked();
 
+  void on_btn_apply_config_2_clicked();
+
 private:
   void InitMarketPair();
 private:

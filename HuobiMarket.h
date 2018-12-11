@@ -22,6 +22,8 @@ private:
   QWebSocket web_socket_;
   TradePair trade_pair_;
   QNetworkAccessManager network_manager_;
+  QNetworkAccessManager network_info_;
+  std::list<std::string> coin_list_;
   DelayState delay_state_;
   uint32_t depth_idx_ = 0;//depth请求索引
   QSqlDatabase db_;
@@ -38,6 +40,7 @@ public slots:
   void OnDisConnected();
   void OnSubScribeMsgReceived(const QByteArray &message);
   void OnLoadTradePair();
+  void OnLoadCoinInfo();
 public:
   std::vector<QuantitativeTransactionItem> buy_quan_list_;
   std::vector<QuantitativeTransactionItem> sell_quan_list_;

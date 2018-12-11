@@ -131,7 +131,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
     QSqlQuery query(db_);
     QString str_sql = "insert into history(`msg`) values('%1')";
     str_sql = str_sql.arg((str_unzip+"\0").data());
-    std::cout<<str_sql.toStdString()<<std::endl;
+    //std::cout<<str_sql.toStdString()<<std::endl;
     query.exec(str_sql);
   }
   qDebug()<<"getmessage:"<<str_unzip.data();
@@ -141,7 +141,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
     boost::property_tree::read_json(istm, pt);
     std::string value = pt.get<std::string>("ping", "-1");
     if(value != "-1"){//处理pingpong
-      qDebug()<<"处理ping信息";
+      //qDebug()<<"处理ping信息";
       std::string str_out = (boost::format("{\"pong\":%s}")%value).str();
       delay_state_.Flush(atol(value.c_str()));
       web_socket_.sendTextMessage(QString::fromStdString(str_out));
@@ -150,7 +150,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
       value = pt.get<std::string>("rep", "-1");
 
       if(value.find("depth") != std::string::npos){
-        qDebug()<<"处理depth信息";
+        //qDebug()<<"处理depth信息";
         //刷新延时
         if(delay_state_.Flush(atol(pt.get<std::string>("ts").c_str()))>10000){
           Disconnect();
@@ -198,7 +198,7 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
       }else{//处理交易信息
         value = pt.get<std::string>("ch", "-1");
         if(value != "-1"){
-          qDebug()<<"处理tradedetail信息";
+          //qDebug()<<"处理tradedetail信息";
           try{
             //刷新延时
             if(delay_state_.Flush(atol(pt.get<std::string>("ts").c_str())) > 10000){
@@ -223,11 +223,11 @@ void HuobiMarket::OnSubScribeMsgReceived(const QByteArray &message){
               if(info_.trade_list_[str_ch].size() > 2000){
                 info_.trade_list_[str_ch].pop_front();
               }
-              qDebug()<<"处理tradedetail信息成功";
-              qDebug()<<trade_item.ToQString();
+              //qDebug()<<"处理tradedetail信息成功";
+              //qDebug()<<trade_item.ToQString();
             }
           }catch(...){//json 解析失败
-            qDebug()<<"处理tradedetail信息失败";
+            //qDebug()<<"处理tradedetail信息失败";
           }
         }
         else{
@@ -268,16 +268,46 @@ void HuobiMarket::OnLoadTradePair(){
         value_item.second.get<std::string>("base-currency"),
         value_item.second.get<std::string>("quote-currency")
       );
+      if(value_item.second.get<std::string>("quote-currency")=="btc"){
+        coin_list_.push_back(value_item.second.get<std::string>("base-currency")+"_"+value_item.second.get<std::string>("quote-currency"));
+      }
     }
     qDebug()<<"交易对解析成功";
     market_pair_list_ = trade_pair_.GetTradePairListByQuoteCoin("btc");
     market_pair_list_.push_back(std::make_pair("btc", "usdt"));
     //market_pair_list_.push_back(std::make_pair("ltc", "usdt"));
     web_socket_.open(QUrl("wss://api.huobi.pro/ws"));
+    //开始收集信息
+    std::string coin_symbol = coin_list_.front();
+    QNetworkRequest request(QUrl(QString().sprintf("https://www.huobi.com/zh-cn/%s/exchange/", coin_symbol.c_str())));
+    QNetworkReply * reply = network_info_.get(request);
+    connect(reply, SIGNAL(finished()), this, SLOT(OnLoadCoinInfo()));
   }catch(...){
 
   }
   reply->deleteLater();
+}
+
+void HuobiMarket::OnLoadCoinInfo(){
+  qDebug()<<"收到了基本信息";
+  QNetworkReply * reply = dynamic_cast<QNetworkReply*>(sender());
+  qDebug()<<reply->url().toString();
+  if(reply->error()){
+    qDebug()<<reply->errorString();
+  }else{
+    coin_list_.pop_front();
+  }
+
+  QByteArray array = reply->readAll();
+  reply->deleteLater();
+  if(coin_list_.size())
+  {
+    //下一次请求
+    std::string coin_symbol = coin_list_.front();
+    QNetworkRequest request(QUrl(QString().sprintf("https://www.huobi.com/zh-cn/%s/exchange/", coin_symbol.c_str())));
+    QNetworkReply * reply = network_info_.get(request);
+    connect(reply, SIGNAL(finished()), this, SLOT(OnLoadCoinInfo()));
+  }
 }
 
 void HuobiMarket::StartWatch(){

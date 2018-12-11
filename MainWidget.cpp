@@ -403,3 +403,8 @@ void MainWidget::on_btn_huobi_simulate_clicked(){
   huobi_market_.ClearTradeHistory();
 }
 
+
+void MainWidget::on_btn_apply_config_2_clicked()
+{
+
+}

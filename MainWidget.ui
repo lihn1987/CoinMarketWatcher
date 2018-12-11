@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>340</y>
+     <y>360</y>
      <width>141</width>
      <height>17</height>
     </rect>
@@ -31,7 +31,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>1137</width>
+     <width>1152</width>
      <height>247</height>
     </rect>
    </property>
@@ -146,140 +146,282 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>交易明细</string>
+     <widget class="QTabWidget" name="tabWidget_2">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>盘面信息</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_42">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>交易明细</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tabHuobiTradeDetail">
+            <property name="minimumSize">
+             <size>
+              <width>540</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string>id</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>时间</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>价格</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>方向</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>数量</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_3333">
+            <property name="minimumSize">
+             <size>
+              <width>210</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>210</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>交易深度</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tabHuobiDepthAsks">
+            <property name="minimumSize">
+             <size>
+              <width>210</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>210</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>价格</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>数量</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tabHuobiDepthBids">
+            <property name="minimumSize">
+             <size>
+              <width>210</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>210</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string>价格</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>数量</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>基本信息</string>
+       </attribute>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>80</width>
+          <height>170</height>
+         </rect>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_28">
+         <item>
+          <widget class="QLabel" name="label_61">
+           <property name="text">
+            <string>总量</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_62">
+           <property name="text">
+            <string>流通量</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_63">
+           <property name="text">
+            <string>总市值</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_64">
+           <property name="text">
+            <string>流通市值</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_65">
+           <property name="text">
+            <string>twitter地址</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_66">
+           <property name="text">
+            <string>github地址</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="tabHuobiTradeDetail">
-        <property name="minimumSize">
-         <size>
-          <width>540</width>
-          <height>0</height>
-         </size>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>30</y>
+          <width>144</width>
+          <height>161</height>
+         </rect>
         </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <column>
-         <property name="text">
-          <string>id</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>时间</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>价格</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>方向</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>数量</string>
-         </property>
-        </column>
+        <layout class="QVBoxLayout" name="verticalLayout_29">
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_2">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_3">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_4">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_5">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_6">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edt_huobi_simulate_balance_7">
+           <property name="text">
+            <string>0.1</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
-      <item>
-       <widget class="QLabel" name="label_3333">
-        <property name="minimumSize">
-         <size>
-          <width>210</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>交易深度</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="tabHuobiDepthAsks">
-        <property name="minimumSize">
-         <size>
-          <width>210</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
-        </attribute>
-        <column>
-         <property name="text">
-          <string>价格</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>数量</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTableWidget" name="tabHuobiDepthBids">
-        <property name="minimumSize">
-         <size>
-          <width>210</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <column>
-         <property name="text">
-          <string>价格</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>数量</string>
-         </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>twitter</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>facebook</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>综合</string>
+       </attribute>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -309,19 +451,6 @@
     <string>代理设置(socket5)</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btn_apply_config">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>30</y>
-     <width>81</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>应用</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_50">
    <property name="geometry">
     <rect>
@@ -339,57 +468,6 @@
    </property>
    <property name="text">
     <string>余额明细</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="edt_huobi_balance">
-   <property name="geometry">
-    <rect>
-     <x>1250</x>
-     <y>20</y>
-     <width>114</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>0</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_55">
-   <property name="geometry">
-    <rect>
-     <x>1170</x>
-     <y>20</y>
-     <width>88</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>88</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>账户余额</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_56">
-   <property name="geometry">
-    <rect>
-     <x>1370</x>
-     <y>20</y>
-     <width>88</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>88</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>btc</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tabHuobiBalance">
@@ -417,10 +495,10 @@
     <bool>true</bool>
    </property>
    <attribute name="horizontalHeaderVisible">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <attribute name="verticalHeaderVisible">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <column>
     <property name="text">
@@ -463,7 +541,7 @@
     <bool>true</bool>
    </property>
    <attribute name="horizontalHeaderVisible">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <column>
     <property name="text">
@@ -510,117 +588,13 @@
     <string> 买卖明细</string>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>30</y>
-     <width>211</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_34">
-    <item>
-     <widget class="QLabel" name="label_46">
-      <property name="minimumSize">
-       <size>
-        <width>88</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>代理IP</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="edt_proxy_ip">
-      <property name="text">
-       <string>127.0.0.1</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>60</y>
-     <width>210</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_35">
-    <item>
-     <widget class="QLabel" name="label_47">
-      <property name="minimumSize">
-       <size>
-        <width>88</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>代理端口</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="edt_proxy_port">
-      <property name="text">
-       <string>1080</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>40</y>
-     <width>384</width>
-     <height>33</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_39">
-    <item>
-     <widget class="QLabel" name="label_59">
-      <property name="text">
-       <string>使用</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="edt_huobi_simulate_balance">
-      <property name="text">
-       <string>0.1</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_60">
-      <property name="text">
-       <string>btc进行模拟交易</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_huobi_simulate">
-      <property name="text">
-       <string>确定</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>360</y>
+     <x>10</x>
+     <y>403</y>
      <width>1121</width>
-     <height>384</height>
+     <height>351</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -669,7 +643,7 @@
              <x>0</x>
              <y>0</y>
              <width>3884</width>
-             <height>337</height>
+             <height>304</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -2562,7 +2536,7 @@
              <x>0</x>
              <y>0</y>
              <width>3884</width>
-             <height>337</height>
+             <height>304</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_47">
@@ -4383,6 +4357,159 @@
      </item>
     </layout>
    </widget>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>1431</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_43">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_27">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_34">
+        <item>
+         <widget class="QLabel" name="label_46">
+          <property name="minimumSize">
+           <size>
+            <width>88</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>代理IP</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_proxy_ip">
+          <property name="text">
+           <string>127.0.0.1</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_35">
+        <item>
+         <widget class="QLabel" name="label_47">
+          <property name="minimumSize">
+           <size>
+            <width>88</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>代理端口</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_proxy_port">
+          <property name="text">
+           <string>1080</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btn_apply_config">
+      <property name="text">
+       <string>应用</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_39">
+      <item>
+       <widget class="QLabel" name="label_59">
+        <property name="text">
+         <string>使用</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="edt_huobi_simulate_balance">
+        <property name="text">
+         <string>0.1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_60">
+        <property name="text">
+         <string>btc进行模拟交易</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_huobi_simulate">
+        <property name="text">
+         <string>确定</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_44">
+        <item>
+         <widget class="QLabel" name="label_55">
+          <property name="minimumSize">
+           <size>
+            <width>88</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>账户余额</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edt_huobi_balance">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_56">
+          <property name="minimumSize">
+           <size>
+            <width>88</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>btc</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="btn_apply_config_2">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>360</y>
+     <width>261</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>测试，获取所有币基础信息</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
